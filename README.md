@@ -72,6 +72,7 @@ Stockage SQLite dans le volume `mst-data`. Mettre un proxy HTTPS (Caddy : `mstec
 
 ## En local
 ```bash
+cd backend
 ADMIN_TOKEN=test npm start          # http://localhost:8080 et /admin (SQLite)
 npm test                            # 13 tests : Docker/SQLite et Vercel/Supabase
 ```
