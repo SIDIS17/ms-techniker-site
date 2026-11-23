@@ -1,0 +1,5 @@
+# Le backend (Node + SQLite) tourne sur le serveur MS Techniker, pas sur Vercel
+backend/
+Dockerfile
+docker-compose.yml
+.dockerignore

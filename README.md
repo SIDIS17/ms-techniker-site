@@ -61,5 +61,12 @@ Si le site reste sur GitHub Pages, indiquer l'adresse de l'API dans `index.html`
 ```
 et ajouter `https://sidis17.github.io` dans `CORS_ORIGINS`. Si l'API ne répond pas, les formulaires proposent automatiquement d'envoyer la demande par WhatsApp.
 
+## Déployer le site sur Vercel
+1. vercel.com → **Add New… → Project** → importer `SIDIS17/ms-techniker-site` (un dépôt privé fonctionne).
+2. Framework Preset : **Other** · Root Directory : `./` · pas de commande de build · **Deploy**.
+
+`vercel.json` règle le cache des images ; `.vercelignore` exclut le dossier `backend/`, qui n'est pas publié sur Vercel.
+Les formulaires (contact, devis, commandes) passent par WhatsApp tant qu'aucune API n'est indiquée dans `<meta name="mst-api">`. Pour les relier au backend hébergé sur le serveur MS Techniker, renseigner son adresse dans cette balise et ajouter le domaine Vercel dans `CORS_ORIGINS`.
+
 ## Contact
 mstechniker96@gmail.com · +243 985 651 544 (WhatsApp)
