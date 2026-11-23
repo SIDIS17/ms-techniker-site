@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MS Techniker</title>
+<!-- Adresse de l'API : vide = même serveur (déploiement Docker). Pour GitHub Pages, mettre par ex. https://api.mstechniker.cd -->
+<meta name="mst-api" content="">
 <meta name="description" content="MS Techniker, startup de Kinshasa : systèmes embarqués, intelligence artificielle, énergie intelligente et IoT.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -233,6 +235,43 @@ html.svgframe .mt-frame::before,html.svgframe .mt-frame::after,html.svgframe .mt
 .award-photo figcaption{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
 @media (max-width:900px){.award{grid-template-columns:auto 1fr}.award-photos{grid-column:1/-1}}
 @media (max-width:480px){.award{grid-template-columns:1fr}.medal{margin:30px 0 0 8px}}
+/* formulaires (backend) */
+.wa-alt{display:block;text-align:center;font-size:13px;color:var(--on-ink-muted);margin-top:8px}
+.wa-alt:hover{color:#fff}
+.cform{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,32px);display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,2fr);gap:24px 40px}
+.cform-head h3{font-size:30px;text-transform:uppercase;margin:6px 0}
+.cform-head p{color:var(--muted)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full,.total.full{grid-column:1/-1}
+.field label{font-size:13.5px;font-weight:600}
+.opt{font-weight:400;color:var(--muted);font-size:12px}
+.field input,.field select,.field textarea{font:inherit;font-size:15px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);width:100%}
+.field textarea{resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(31,79,214,.18)}
+.field.bad input,.field.bad textarea,.field.bad select{border-color:#c0392b}
+.ferr{color:#c0392b;font-size:12.5px;min-height:0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.factions{grid-column:2;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.fstatus{margin:0;font-size:14px;color:var(--muted)}
+.fstatus.ok{color:#0f8a5f}.fstatus.bad{color:#c0392b}
+.fstatus a{color:inherit;font-weight:600}
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none}
+.modal-bg{position:absolute;inset:0;background:rgba(8,10,16,.62);backdrop-filter:blur(3px)}
+.modal-card{position:relative;width:min(640px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--card);border-radius:24px;padding:28px;box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+.modal-card h3{font-size:30px;text-transform:uppercase;margin:6px 0 18px}
+.modal-card .factions{grid-column:auto;margin-top:18px}
+.modal-x{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:22px;line-height:1;cursor:pointer}
+.total{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;background:var(--blue-soft);border-radius:12px;padding:12px 14px}
+.total span{font-size:13px;color:var(--muted)}
+.total b{font-family:var(--f-display);font-size:30px;color:var(--blue);font-variant-numeric:tabular-nums}
+.fnote{font-size:12.5px;color:var(--muted);margin:12px 0 0}
+.done p{color:var(--muted);margin:0 0 18px}
+.done .mono{font-family:var(--f-mono);color:var(--ink)}
+body.modal-open{overflow:hidden}
+@media (max-width:760px){.cform{grid-template-columns:1fr}.factions{grid-column:1}}
+@media (max-width:520px){.fgrid{grid-template-columns:1fr}.modal{padding:0;place-items:end}.modal-card{border-radius:22px 22px 0 0;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom))}.factions .btn{width:100%;justify-content:center}}
 /* sites */
 .sites{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .site{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
@@ -667,7 +706,8 @@ footer .brand span{font-size:17px}
           <div class="price"><b>15&nbsp;$</b><span>/ mois</span></div>
           <div class="fc">≈ 34 000 FC / mois</div>
           <ul><li>2 vCPU</li><li>4 Go RAM</li><li>50 Go SSD</li><li>Bande passante : 1 To/mois</li><li>Certificat SSL</li><li>Sauvegardes</li><li>Monitoring</li></ul>
-          <a class="btn btn-ghost" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Starter.">Choisir Starter</a>
+          <button type="button" class="btn btn-ghost" data-commander="starter">Choisir Starter</button>
+          <a class="wa-alt" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Starter.">ou par WhatsApp</a>
         </article>
         <div class="mt-frame sm"><span class="chev l"></span><span class="chev r"></span><article class="plan hot" style="height:100%">
           <h3>business</h3>
@@ -675,7 +715,8 @@ footer .brand span{font-size:17px}
           <div class="price"><b>30&nbsp;$</b><span>/ mois</span></div>
           <div class="fc">≈ 68 000 FC / mois</div>
           <ul><li>4 vCPU</li><li>8 Go RAM</li><li>100 Go NVMe</li><li>Bande passante : 2 To/mois</li><li>Sauvegardes automatisées</li><li>Sécurité renforcée</li><li>Monitoring 24/7</li><li>Support prioritaire</li></ul>
-          <a class="btn btn-blue" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Business.">Choisir Business</a>
+          <button type="button" class="btn btn-blue" data-commander="business">Choisir Business</button>
+          <a class="wa-alt" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Business.">ou par WhatsApp</a>
         </article></div>
         <article class="plan">
           <h3>pro</h3>
@@ -683,7 +724,8 @@ footer .brand span{font-size:17px}
           <div class="price"><b>60&nbsp;$</b><span>/ mois</span></div>
           <div class="fc">≈ 136 000 FC / mois</div>
           <ul><li>8 vCPU</li><li>16 Go RAM</li><li>250 Go NVMe</li><li>Bande passante : 5 To/mois</li><li>Sauvegardes avancées</li><li>Sécurité renforcée</li><li>Monitoring 24/7</li><li>Administration serveur</li><li>Support prioritaire</li></ul>
-          <a class="btn btn-ghost" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Pro.">Choisir Pro</a>
+          <button type="button" class="btn btn-ghost" data-commander="pro">Choisir Pro</button>
+          <a class="wa-alt" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Pro.">ou par WhatsApp</a>
         </article>
         <article class="plan">
           <h3>enterprise</h3>
@@ -691,7 +733,8 @@ footer .brand span{font-size:17px}
           <div class="price"><b>120&nbsp;$</b><span>/ mois</span></div>
           <div class="fc">≈ 272 000 FC / mois</div>
           <ul><li>16 vCPU</li><li>32 Go RAM</li><li>500 Go NVMe</li><li>Bande passante : 10 To/mois</li><li>Infrastructure dédiée</li><li>Haute disponibilité</li><li>Sauvegardes avancées</li><li>Monitoring 24/7</li><li>Administration</li><li>Support dédié</li></ul>
-          <a class="btn btn-ghost" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Enterprise.">Choisir Enterprise</a>
+          <button type="button" class="btn btn-ghost" data-commander="enterprise">Choisir Enterprise</button>
+          <a class="wa-alt" href="https://wa.me/243985651544?text=Bonjour%20MS%20Techniker%2C%20je%20suis%20int%C3%A9ress%C3%A9%28e%29%20par%20l%27offre%20serveur%20Enterprise.">ou par WhatsApp</a>
         </article>
       </div>
       <div class="extras">
@@ -767,10 +810,57 @@ footer .brand span{font-size:17px}
         </dl>
       </div>
       </div>
+
+      <form class="cform" id="contactForm" novalidate>
+        <div class="cform-head">
+          <span class="code">&lt;message /&gt;</span>
+          <h3>Écrivez-nous</h3>
+          <p>Réponse par e-mail ou WhatsApp.</p>
+        </div>
+        <div class="fgrid">
+          <div class="field"><label for="c-nom">Nom</label><input id="c-nom" name="nom" autocomplete="name" required maxlength="120"><small class="ferr" data-for="nom"></small></div>
+          <div class="field"><label for="c-email">E-mail</label><input id="c-email" name="email" type="email" autocomplete="email" required maxlength="200"><small class="ferr" data-for="email"></small></div>
+          <div class="field"><label for="c-tel">Téléphone <span class="opt">facultatif</span></label><input id="c-tel" name="telephone" type="tel" autocomplete="tel" placeholder="+243 …" maxlength="30"><small class="ferr" data-for="telephone"></small></div>
+          <div class="field"><label for="c-sujet">Sujet</label><select id="c-sujet" name="sujet"><option>Projet énergie</option><option>Systèmes embarqués</option><option>Intelligence artificielle</option><option>Offres serveurs</option><option>Partenariat</option><option>Autre</option></select></div>
+          <div class="field full"><label for="c-msg">Message</label><textarea id="c-msg" name="message" rows="5" required maxlength="4000"></textarea><small class="ferr" data-for="message"></small></div>
+          <div class="hp" aria-hidden="true"><label for="c-site">Site web</label><input id="c-site" name="site_web" tabindex="-1" autocomplete="off"></div>
+        </div>
+        <div class="factions"><button class="btn btn-blue" type="submit">Envoyer le message</button><p class="fstatus" role="status" aria-live="polite"></p></div>
+      </form>
     </div>
   </section>
 </main>
 
+
+<div class="modal" id="orderModal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="om-title">
+    <button class="modal-x" type="button" data-close aria-label="Fermer">×</button>
+    <form id="orderForm" novalidate>
+      <span class="code">&lt;commande /&gt;</span>
+      <h3 id="om-title">Commander un serveur</h3>
+      <div class="fgrid">
+        <div class="field"><label for="o-offre">Offre</label><select id="o-offre" name="offre"><option value="starter">Starter · 15 $/mois</option><option value="business">Business · 30 $/mois</option><option value="pro">Pro · 60 $/mois</option><option value="enterprise">Enterprise · 120 $/mois</option></select><small class="ferr" data-for="offre"></small></div>
+        <div class="field"><label for="o-duree">Durée</label><select id="o-duree" name="duree_mois"><option value="1">1 mois</option><option value="3">3 mois</option><option value="6">6 mois</option><option value="12">12 mois</option></select></div>
+        <div class="total full"><span>Total estimé</span><b id="o-total">15 $</b><span id="o-fc">≈ 34 000 FC</span></div>
+        <div class="field"><label for="o-nom">Nom</label><input id="o-nom" name="nom" autocomplete="name" required maxlength="120"><small class="ferr" data-for="nom"></small></div>
+        <div class="field"><label for="o-ent">Entreprise <span class="opt">facultatif</span></label><input id="o-ent" name="entreprise" autocomplete="organization" maxlength="150"></div>
+        <div class="field"><label for="o-email">E-mail</label><input id="o-email" name="email" type="email" autocomplete="email" required maxlength="200"><small class="ferr" data-for="email"></small></div>
+        <div class="field"><label for="o-tel">Téléphone (WhatsApp)</label><input id="o-tel" name="telephone" type="tel" autocomplete="tel" required placeholder="+243 …" maxlength="30"><small class="ferr" data-for="telephone"></small></div>
+        <div class="field full"><label for="o-usage">Usage prévu <span class="opt">facultatif</span></label><textarea id="o-usage" name="usage" rows="3" maxlength="2000" placeholder="Site web, application, base de données…"></textarea></div>
+        <div class="hp" aria-hidden="true"><label for="o-site">Site web</label><input id="o-site" name="site_web" tabindex="-1" autocomplete="off"></div>
+      </div>
+      <div class="factions"><button class="btn btn-blue" type="submit">Envoyer la demande</button><p class="fstatus" role="status" aria-live="polite"></p></div>
+      <p class="fnote">Pas de paiement en ligne : notre équipe vous recontacte pour la mise en service.</p>
+    </form>
+    <div class="done" id="orderDone" hidden>
+      <span class="code">&lt;reçu /&gt;</span>
+      <h3>Demande envoyée</h3>
+      <p>Référence <b class="mono" id="od-ref"></b>. Un e-mail de confirmation vous a été adressé ; notre équipe vous recontacte rapidement.</p>
+      <button class="btn btn-blue" type="button" data-close>Fermer</button>
+    </div>
+  </div>
+</div>
 <footer>
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Retour en haut"><span class="markwrap"><img src="img/mark.png" alt=""></span><img class="wordmark" src="img/wordmark.png" alt="ms techniker"></a>
@@ -959,6 +1049,56 @@ document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click
   var t=b.getAttribute('data-copy'),done=function(){b.textContent='Copié ✓';setTimeout(function(){b.textContent='Copier';},1800);};
   try{navigator.clipboard.writeText(t).then(done,function(){b.textContent='Sélectionnez l\'adresse';});}catch(e){b.textContent='Sélectionnez l\'adresse';}
 });});
+</script>
+<script>
+/* Formulaires reliés à l'API MS Techniker (backend/server.js) */
+(function(){
+  var meta=document.querySelector('meta[name="mst-api"]'),API=((meta&&meta.content)||'').replace(/\/$/,'');
+  var WA='https://wa.me/243985651544';
+  var PRIX={starter:[15,34000,'Starter'],business:[30,68000,'Business'],pro:[60,136000,'Pro'],enterprise:[120,272000,'Enterprise']};
+  function donnees(f){var o={};new FormData(f).forEach(function(v,k){o[k]=String(v);});return o;}
+  function erreurs(f,champs){f.querySelectorAll('.field').forEach(function(x){x.classList.remove('bad');});
+    f.querySelectorAll('.ferr').forEach(function(e){var c=champs&&champs[e.dataset.for];e.textContent=c||'';if(c)e.closest('.field').classList.add('bad');});
+    var premier=f.querySelector('.field.bad input, .field.bad textarea, .field.bad select');if(premier)premier.focus();}
+  function statut(f,cls,html){var p=f.querySelector('.fstatus');p.className='fstatus '+(cls||'');p.innerHTML=html;}
+  function envoyer(chemin,corps){return fetch(API+chemin,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(corps)})
+    .then(function(r){var ct=r.headers.get('content-type')||'';if(ct.indexOf('json')<0)throw new Error('hors-ligne');return r.json().then(function(j){return{r:r,j:j};});});}
+  function repli(texte){return 'Le serveur ne répond pas. <a href="'+WA+'?text='+encodeURIComponent(texte)+'">Envoyez-nous ce message par WhatsApp</a>.';}
+
+  // contact
+  var cf=document.getElementById('contactForm');
+  if(cf)cf.addEventListener('submit',function(e){e.preventDefault();var d=donnees(cf),b=cf.querySelector('[type=submit]');
+    b.disabled=true;statut(cf,'','Envoi…');
+    envoyer('/api/contact',d).then(function(x){
+      if(x.r.ok){cf.reset();erreurs(cf,{});statut(cf,'ok','Message envoyé. Merci, nous vous répondons rapidement.');}
+      else{erreurs(cf,x.j.champs);statut(cf,'bad',x.j.erreur||'Erreur.');}
+    }).catch(function(){statut(cf,'bad',repli('Bonjour MS Techniker, je suis '+(d.nom||'')+' ('+(d.email||'')+'). '+(d.message||'')));})
+    .then(function(){b.disabled=false;});});
+
+  // commande
+  var modal=document.getElementById('orderModal'),of=document.getElementById('orderForm'),done=document.getElementById('orderDone'),dernierFocus=null;
+  if(!modal||!of)return;
+  function total(){var p=PRIX[of.offre.value],m=+of.duree_mois.value;
+    document.getElementById('o-total').textContent=(p[0]*m)+' $';
+    document.getElementById('o-fc').textContent='≈ '+(p[1]*m).toLocaleString('fr-FR')+' FC';}
+  function ouvrir(offre){dernierFocus=document.activeElement;of.hidden=false;done.hidden=true;erreurs(of,{});statut(of,'','');
+    if(offre&&PRIX[offre])of.offre.value=offre;total();modal.hidden=false;document.body.classList.add('modal-open');
+    setTimeout(function(){of.nom.focus();},30);}
+  function fermer(){modal.hidden=true;document.body.classList.remove('modal-open');if(dernierFocus)dernierFocus.focus();}
+  document.querySelectorAll('[data-commander]').forEach(function(b){b.addEventListener('click',function(){ouvrir(b.dataset.commander);});});
+  modal.addEventListener('click',function(e){if(e.target.closest('[data-close]'))fermer();});
+  document.addEventListener('keydown',function(e){if(!modal.hidden&&e.key==='Escape')fermer();
+    if(!modal.hidden&&e.key==='Tab'){var f=[].slice.call(modal.querySelectorAll('button,input,select,textarea,a[href]')).filter(function(x){return x.offsetParent!==null&&x.tabIndex>=0;});
+      if(!f.length)return;var a=f[0],z=f[f.length-1];if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}});
+  of.offre.addEventListener('change',total);of.duree_mois.addEventListener('change',total);
+  of.addEventListener('submit',function(e){e.preventDefault();var d=donnees(of),b=of.querySelector('[type=submit]');
+    b.disabled=true;statut(of,'','Envoi…');
+    envoyer('/api/commandes',d).then(function(x){
+      if(x.r.ok){document.getElementById('od-ref').textContent=x.j.reference;of.reset();of.hidden=true;done.hidden=false;done.querySelector('button').focus();}
+      else{erreurs(of,x.j.champs);statut(of,'bad',x.j.erreur||'Erreur.');}
+    }).catch(function(){var p=PRIX[d.offre]||['','',''];statut(of,'bad',repli('Bonjour MS Techniker, je souhaite commander l\'offre serveur '+p[2]+' pour '+d.duree_mois+' mois. Nom : '+(d.nom||'')+', e-mail : '+(d.email||'')+', tél : '+(d.telephone||'')+'.'));})
+    .then(function(){b.disabled=false;});});
+})();
 </script>
 </body>
 </html>

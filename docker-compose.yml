@@ -1,0 +1,12 @@
+services:
+  mstechniker:
+    build: .
+    container_name: mstechniker
+    restart: unless-stopped
+    env_file: backend/.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - mst-data:/data
+volumes:
+  mst-data:

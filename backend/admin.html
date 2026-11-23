@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin · MS Techniker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0c0e13;--paper:#f4f6f9;--card:#fff;--blue:#1f4fd6;--blue-soft:#e5ebfb;--line:#d6dbe5;--muted:#596173;--ok:#0f8a5f;--warn:#b7791f;--bad:#c0392b;
+  --f-display:"Barlow Semi Condensed","Arial Narrow",sans-serif;--f-body:"IBM Plex Sans",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body)}
+header{background:var(--ink);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header b{font-family:var(--f-display);font-size:22px;letter-spacing:.02em;text-transform:uppercase}
+header .dot{width:9px;height:9px;border-radius:50%;background:var(--blue)}
+header .sp{flex:1}
+main{max-width:1200px;margin:0 auto;padding:20px}
+button,select,input{font:inherit}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:500}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+header .btn{background:transparent;color:#fff;border-color:#3a4255}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.login{max-width:420px;margin:12vh auto;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
+.login h1{font-family:var(--f-display);text-transform:uppercase;margin:0 0 6px}
+.login p{color:var(--muted);margin:0 0 18px}
+.login input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:12px}
+.err{color:var(--bad);font-size:14px;min-height:20px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.tile span{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.tile b{display:block;font-family:var(--f-display);font-size:34px;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.wrap{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:860px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:500;background:#fafbfd;position:sticky;top:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ref{font-family:var(--f-mono);font-size:13px}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid}
+.s-nouvelle,.s-nouveau{color:var(--blue);border-color:#b9c9f4;background:var(--blue-soft)}
+.s-en_cours{color:var(--warn);border-color:#ecd3a6;background:#fdf6e9}
+.s-active,.s-traite{color:var(--ok);border-color:#a9dcc6;background:#ecf8f2}
+.s-annulee{color:var(--muted);border-color:var(--line);background:#f3f4f7}
+.small{font-size:13px;color:var(--muted)}
+.msg{white-space:pre-wrap;max-width:460px}
+select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><span class="dot"></span><b>ms techniker · admin</b><span class="sp"></span><button class="btn" id="refresh" hidden>Actualiser</button><button class="btn" id="logout" hidden>Déconnexion</button></header>
+
+<section class="login" id="login">
+  <h1>Espace admin</h1>
+  <p>Entrez le jeton administrateur défini dans <code>ADMIN_TOKEN</code>.</p>
+  <form id="loginForm">
+    <label for="token" class="small">Jeton</label>
+    <input id="token" type="password" autocomplete="current-password" required>
+    <div class="err" id="loginErr" role="alert"></div>
+    <button class="btn blue" type="submit">Se connecter</button>
+  </form>
+</section>
+
+<main id="app" hidden>
+  <div class="tiles" id="tiles"></div>
+  <div class="tabs" role="tablist">
+    <button class="btn" role="tab" id="tabCmd" aria-selected="true">Commandes</button>
+    <button class="btn" role="tab" id="tabMsg" aria-selected="false">Messages</button>
+  </div>
+  <div class="wrap" id="table"></div>
+  <p class="small" id="status" role="status"></p>
+</main>
+
+<script>
+(function(){
+  var KEY='mst_admin_token',token='';
+  try{token=sessionStorage.getItem(KEY)||'';}catch(e){}
+  var $=function(id){return document.getElementById(id);};
+  var vue='commandes',donnees={commandes:[],messages:[]};
+  var STATUTS_C=[['nouvelle','Nouvelle'],['en_cours','En cours'],['active','Active'],['annulee','Annulée']];
+  var STATUTS_M=[['nouveau','Nouveau'],['traite','Traité']];
+  var OFFRES={starter:'Starter',business:'Business',pro:'Pro',enterprise:'Enterprise'};
+
+  function api(path,opt){opt=opt||{};
+    return fetch(path,{method:opt.method||'GET',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:opt.body?JSON.stringify(opt.body):undefined})
+      .then(function(r){if(r.status===401){deconnexion('Jeton refusé.');throw new Error('401');}return r.json().then(function(j){if(!r.ok)throw new Error(j.erreur||r.status);return j;});});}
+
+  function el(tag,attrs,kids){var e=document.createElement(tag);for(var k in (attrs||{})){if(k==='text')e.textContent=attrs[k];else if(k==='cls')e.className=attrs[k];else e.setAttribute(k,attrs[k]);}
+    (kids||[]).forEach(function(c){if(c!=null)e.appendChild(typeof c==='string'?document.createTextNode(c):c);});return e;}
+  function date(s){try{return new Date(s).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'});}catch(e){return s;}}
+  function pill(s,list){var l=list.find(function(x){return x[0]===s;});return el('span',{cls:'pill s-'+s,text:l?l[1]:s});}
+
+  function selectStatut(courant,list,onChange,label){var s=el('select',{'aria-label':label});
+    list.forEach(function(x){var o=el('option',{value:x[0],text:x[1]});if(x[0]===courant)o.selected=true;s.appendChild(o);});
+    s.addEventListener('change',function(){onChange(s.value);});return s;}
+
+  function tiles(st){var t=$('tiles');t.textContent='';
+    [['Commandes nouvelles',st.commandes_nouvelles],['Serveurs actifs',st.commandes_actives],['Revenu mensuel actif',st.revenu_mensuel_usd+' $'],['Messages non traités',st.messages_nouveaux],['Commandes au total',st.commandes]]
+      .forEach(function(x){t.appendChild(el('div',{cls:'tile'},[el('span',{text:x[0]}),el('b',{text:String(x[1])})]));});}
+
+  function tableCommandes(){var l=donnees.commandes;if(!l.length)return el('div',{cls:'empty',text:'Aucune commande pour le moment.'});
+    var tb=el('tbody');
+    l.forEach(function(c){
+      var note=el('input',{value:c.note_interne||'',placeholder:'Note interne','aria-label':'Note interne '+c.reference});
+      note.style.cssText='width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:8px';
+      note.addEventListener('change',function(){maj('/api/admin/commandes/'+c.id,{note_interne:note.value});});
+      tb.appendChild(el('tr',null,[
+        el('td',null,[el('div',{cls:'ref',text:c.reference}),el('div',{cls:'small',text:date(c.cree_le)})]),
+        el('td',null,[el('b',{text:OFFRES[c.offre]||c.offre}),el('div',{cls:'small',text:c.prix_usd+' $/mois · '+c.duree_mois+' mois'})]),
+        el('td',{cls:'num',text:(c.prix_usd*c.duree_mois)+' $'}),
+        el('td',null,[el('div',{text:c.nom}),el('div',{cls:'small',text:c.entreprise||''})]),
+        el('td',null,[el('div',null,[el('a',{href:'mailto:'+c.email,text:c.email})]),el('div',null,[el('a',{href:'https://wa.me/'+String(c.telephone).replace(/[^0-9]/g,''),text:c.telephone})])]),
+        el('td',{cls:'msg small',text:c.usage||'—'}),
+        el('td',null,[pill(c.statut,STATUTS_C),el('div',{style:'margin-top:6px'},[selectStatut(c.statut,STATUTS_C,function(v){maj('/api/admin/commandes/'+c.id,{statut:v});},'Statut '+c.reference)])]),
+        el('td',{style:'min-width:160px'},[note])]));});
+    return el('table',null,[el('thead',null,[el('tr',null,['Référence','Offre','Total','Client','Contact','Usage','Statut','Note'].map(function(h){return el('th',{scope:'col',text:h});}))]),tb]);}
+
+  function tableMessages(){var l=donnees.messages;if(!l.length)return el('div',{cls:'empty',text:'Aucun message pour le moment.'});
+    var tb=el('tbody');
+    l.forEach(function(m){tb.appendChild(el('tr',null,[
+      el('td',{cls:'small',text:date(m.cree_le)}),
+      el('td',null,[el('div',{text:m.nom}),el('div',null,[el('a',{href:'mailto:'+m.email,text:m.email})]),el('div',{cls:'small',text:m.telephone||''})]),
+      el('td',null,[el('b',{text:m.sujet||'(sans sujet)'}),el('div',{cls:'msg',text:m.message})]),
+      el('td',null,[pill(m.statut,STATUTS_M),el('div',{style:'margin-top:6px'},[selectStatut(m.statut,STATUTS_M,function(v){maj('/api/admin/messages/'+m.id,{statut:v});},'Statut message '+m.id)])])]));});
+    return el('table',null,[el('thead',null,[el('tr',null,['Reçu','De','Message','Statut'].map(function(h){return el('th',{scope:'col',text:h});}))]),tb]);}
+
+  function rendre(){var w=$('table');w.textContent='';w.appendChild(vue==='commandes'?tableCommandes():tableMessages());
+    $('tabCmd').setAttribute('aria-selected',vue==='commandes');$('tabMsg').setAttribute('aria-selected',vue==='messages');}
+
+  function charger(){$('status').textContent='Chargement…';
+    return Promise.all([api('/api/admin/stats'),api('/api/admin/commandes'),api('/api/admin/messages')]).then(function(r){
+      tiles(r[0]);donnees.commandes=r[1].commandes;donnees.messages=r[2].messages;rendre();
+      $('status').textContent='Mis à jour à '+new Date().toLocaleTimeString('fr-FR');});}
+
+  function maj(path,body){api(path,{method:'PATCH',body:body}).then(charger).catch(function(e){if(e.message!=='401')$('status').textContent='Erreur : '+e.message;});}
+
+  function connecte(){$('login').hidden=true;$('app').hidden=false;$('logout').hidden=false;$('refresh').hidden=false;}
+  function deconnexion(msg){token='';try{sessionStorage.removeItem(KEY);}catch(e){}
+    $('login').hidden=false;$('app').hidden=true;$('logout').hidden=true;$('refresh').hidden=true;$('loginErr').textContent=msg||'';}
+
+  $('loginForm').addEventListener('submit',function(e){e.preventDefault();token=$('token').value.trim();
+    charger().then(function(){try{sessionStorage.setItem(KEY,token);}catch(e){}connecte();})
+      .catch(function(err){if(err.message!=='401')$('loginErr').textContent='Serveur injoignable : '+err.message;});});
+  $('logout').addEventListener('click',function(){deconnexion();});
+  $('refresh').addEventListener('click',charger);
+  $('tabCmd').addEventListener('click',function(){vue='commandes';rendre();});
+  $('tabMsg').addEventListener('click',function(){vue='messages';rendre();});
+  if(token)charger().then(connecte).catch(function(){});
+})();
+</script>
+</body>
+</html>
