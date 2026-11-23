@@ -1,5 +1,7 @@
-# Le backend (Node + SQLite) tourne sur le serveur MS Techniker, pas sur Vercel
+# Seuls le site, admin/ et api/ partent sur Vercel
 backend/
+supabase/
 Dockerfile
 docker-compose.yml
 .dockerignore
+README.md

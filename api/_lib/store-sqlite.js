@@ -1,5 +1,5 @@
 'use strict';
-// Base SQLite intégrée à Node.js 22 (module node:sqlite), aucune dépendance à installer.
+// Stockage SQLite (module node:sqlite de Node.js 22), utilisé par le déploiement Docker.
 const fs = require('node:fs');
 const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
@@ -88,6 +88,7 @@ function ouvrir(dbPath) {
   };
 
   return {
+    type: 'sqlite',
     db,
     ajouterMessage(m) {
       const r = st.ajouterMessage.run(m.nom, m.email, m.telephone || null, m.sujet || null, m.message);

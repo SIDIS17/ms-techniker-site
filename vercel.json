@@ -2,10 +2,23 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/index.js": { "maxDuration": 20 }
+  },
+  "rewrites": [
+    { "source": "/api/:route*", "destination": "/api/index?route=:route*" }
+  ],
   "headers": [
     {
       "source": "/img/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, immutable" }]
+    },
+    {
+      "source": "/admin(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Robots-Tag", "value": "noindex" }
+      ]
     },
     {
       "source": "/(.*)",

@@ -5,6 +5,8 @@ WORKDIR /app
 COPY index.html README.md ./
 COPY img ./img
 COPY backend ./backend
+COPY api ./api
+COPY admin ./admin
 RUN rm -rf backend/test backend/data && mkdir -p /data && chown -R node:node /data
 USER node
 VOLUME ["/data"]

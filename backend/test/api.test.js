@@ -108,6 +108,8 @@ test('site statique servi, fichiers sensibles bloqués', async () => {
   assert.match(await i.text(), /MS Techniker/);
   assert.equal((await fetch(base + '/admin')).status, 200);
   assert.equal((await fetch(base + '/backend/server.js')).status, 404);
+  assert.equal((await fetch(base + '/api/_lib/core.js')).status, 404);
+  assert.equal((await fetch(base + '/supabase/schema.sql')).status, 404);
   assert.equal((await fetch(base + '/.git/config')).status, 404);
   assert.equal((await fetch(base + '/%2e%2e/%2e%2e/etc/passwd')).status, 404);
 });
