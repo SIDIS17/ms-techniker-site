@@ -272,6 +272,34 @@ html.svgframe .mt-frame::before,html.svgframe .mt-frame::after,html.svgframe .mt
 body.modal-open{overflow:hidden}
 @media (max-width:760px){.cform{grid-template-columns:1fr}.factions{grid-column:1}}
 @media (max-width:520px){.fgrid{grid-template-columns:1fr}.modal{padding:0;place-items:end}.modal-card{border-radius:22px 22px 0 0;max-height:92vh;padding:22px 18px calc(22px + env(safe-area-inset-bottom))}.factions .btn{width:100%;justify-content:center}}
+/* devis */
+.devis{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,2fr);gap:20px;align-items:start}
+.devis-aside{background:var(--ink);color:var(--on-ink);border-radius:var(--r);padding:26px;position:sticky;top:90px}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:flex;flex-direction:column;gap:18px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:2px 12px}
+.steps li::before{content:counter(s);grid-row:span 2;width:34px;height:34px;border-radius:50%;border:2px solid var(--blue);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;color:#fff}
+.steps b{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.02em;font-size:18px}
+.steps span{color:var(--on-ink-muted);font-size:14px}
+.small-note{margin-top:22px;padding-top:18px;border-top:1px dashed #2c3343;color:var(--on-ink-muted);font-size:13.5px}
+.dform{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,30px);display:flex;flex-direction:column;gap:18px}
+.dform .factions{grid-column:auto}
+.who{border:0;margin:0;padding:0}
+.who legend{font-size:13.5px;font-weight:600;margin-bottom:8px;padding:0}
+.seg-big{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg-big input{position:absolute;opacity:0;pointer-events:none}
+.seg-big label{display:flex;flex-direction:column;gap:2px;padding:14px 16px;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;transition:border-color .15s,background .15s}
+.seg-big label b{font-family:var(--f-display);font-size:20px;text-transform:uppercase;letter-spacing:.02em}
+.seg-big label span{font-size:13px;color:var(--muted)}
+.seg-big input:checked+label{border-color:var(--blue);background:var(--blue-soft);box-shadow:inset 0 0 0 1px var(--blue)}
+.seg-big input:focus-visible+label{outline:3px solid var(--blue);outline-offset:2px}
+[hidden]{display:none!important}
+.ent-only.full{grid-column:1/-1}
+.ent-only{border-left:3px solid var(--blue);padding-left:14px}
+.ent-only[hidden]{display:none}
+.dform .done{padding:8px 0}
+.dform .done h3{font-size:28px;text-transform:uppercase;margin:6px 0}
+@media (max-width:900px){.devis{grid-template-columns:1fr}.devis-aside{position:static}}
+@media (max-width:520px){.seg-big{grid-template-columns:1fr 1fr}.seg-big label{padding:12px}.seg-big label b{font-size:17px}.seg-big label span{font-size:12px}}
 /* sites */
 .sites{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .site{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
@@ -426,21 +454,22 @@ footer .brand span{font-size:17px}
       <li><a href="#sites">Sites</a></li>
       <li><a href="#equipes">Équipes</a></li>
       <li><a href="#serveurs">Serveurs</a></li>
+      <li><a href="#devis">Devis</a></li>
       <li><a href="#atelier">Atelier</a></li>
       <li><a href="#actualites">Actualités</a></li>
     </ul>
-    <a class="btn btn-blue nav-cta" href="#contact">Nous contacter</a>
+    <a class="btn btn-blue nav-cta" href="#devis">Demander un devis</a>
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
   </div>
   <nav class="mnav" id="mnav" aria-label="Menu mobile"><div class="mnav-inner">
-    <a href="#projets">Projets</a><a href="#serveurs">Offres serveurs</a><a href="#equipes">Équipes</a><a href="#atelier">Atelier</a><a href="#actualites">Actualités</a><a href="#domaines">Domaines</a><a href="#sites">Sites</a>
+    <a href="#devis">Demander un devis</a><a href="#projets">Projets</a><a href="#serveurs">Offres serveurs</a><a href="#equipes">Équipes</a><a href="#atelier">Atelier</a><a href="#actualites">Actualités</a><a href="#domaines">Domaines</a><a href="#sites">Sites</a>
     <a class="btn btn-blue" href="#contact">Nous contacter</a>
   </div></nav>
 </header>
 <div class="mbar" aria-label="Contact rapide">
   <a href="https://wa.me/243985651544" class="mb-wa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.6 8.4c.2-.5.5-.5.8-.5h.5c.2 0 .4 0 .5.4l.7 1.6c.1.2 0 .4-.1.6l-.5.6c.6 1.2 1.6 2.2 2.8 2.8l.6-.5c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.1.6-.5.8-.6.3-1.4.5-2.4.1a8.4 8.4 0 0 1-4.9-4.9c-.4-1-.2-1.8.1-2.4Z" fill="currentColor"/></svg>WhatsApp</a>
   <a href="mailto:mstechniker96@gmail.com" class="mb-mail"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>E-mail</a>
-  <a href="#serveurs" class="mb-srv">Offres serveurs</a>
+  <a href="#devis" class="mb-srv">Devis</a>
 </div>
 
 <main id="top">
@@ -460,7 +489,7 @@ footer .brand span{font-size:17px}
           <p class="lead">Systèmes embarqués, IA, énergie intelligente, IoT et serveurs. Du prototype au terrain.</p>
           <div class="cta">
             <a class="btn btn-blue" href="#projets">Voir nos projets</a>
-            <a class="btn btn-ghost" href="#equipes">Rencontrer les équipes</a>
+            <a class="btn btn-ghost" href="#devis">Demander un devis</a>
           </div>
         </div>
 
@@ -788,6 +817,76 @@ footer .brand span{font-size:17px}
     </div>
   </section>
 
+  <section id="devis" class="devis-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="code">&lt;devis /&gt;</span>
+          <h2>Demander un devis</h2>
+        </div>
+        <p>Particulier ou entreprise : décrivez votre besoin, nous revenons vers vous avec une proposition chiffrée.</p>
+      </div>
+      <div class="devis">
+        <aside class="devis-aside">
+          <ol class="steps">
+            <li><b>Votre demande</b><span>Le besoin, le lieu, le budget envisagé.</span></li>
+            <li><b>Étude</b><span>Un membre de l'équipe vous appelle pour préciser.</span></li>
+            <li><b>Proposition</b><span>Devis détaillé par e-mail, avec sa référence.</span></li>
+          </ol>
+          <p class="small-note">Pas de demande trop petite : une installation chez un particulier comme un projet industriel.</p>
+        </aside>
+        <form class="dform" id="devisForm" novalidate>
+          <fieldset class="who">
+            <legend>Vous êtes</legend>
+            <div class="seg-big">
+              <input type="radio" name="type_client" id="d-part" value="particulier" checked><label for="d-part"><b>Particulier</b><span>Maison, commerce, projet personnel</span></label>
+              <input type="radio" name="type_client" id="d-ent" value="entreprise"><label for="d-ent"><b>Entreprise</b><span>Société, ONG, administration, école</span></label>
+            </div>
+          </fieldset>
+          <div class="fgrid">
+            <div class="field full"><label for="d-service">Service souhaité</label>
+              <select id="d-service" name="service" required>
+                <option value="">Choisir…</option>
+                <option value="energie">Énergie (micro-hydro, solaire, stockage)</option>
+                <option value="embarque">Systèmes embarqués et automatisme</option>
+                <option value="ia">Intelligence artificielle et données</option>
+                <option value="iot">IoT et supervision à distance</option>
+                <option value="serveurs">Serveurs, hébergement et cloud</option>
+                <option value="web">Site web ou application</option>
+                <option value="formation">Formation et accompagnement</option>
+                <option value="autre">Autre besoin</option>
+              </select><small class="ferr" data-for="service"></small></div>
+            <div class="field full"><label for="d-desc">Votre besoin</label><textarea id="d-desc" name="description" rows="5" required maxlength="5000" placeholder="Ex. : alimenter 3 maisons avec un petit cours d'eau ; superviser des pompes à distance ; héberger notre application…"></textarea><small class="ferr" data-for="description"></small></div>
+            <div class="field"><label for="d-budget">Budget envisagé <span class="opt">facultatif</span></label><select id="d-budget" name="budget"><option value="">Je ne sais pas</option><option>&lt; 500 $</option><option>500 – 2 000 $</option><option>2 000 – 10 000 $</option><option>&gt; 10 000 $</option><option>À définir</option></select></div>
+            <div class="field"><label for="d-delai">Délai <span class="opt">facultatif</span></label><select id="d-delai" name="delai"><option value="">Non précisé</option><option>Urgent (&lt; 1 mois)</option><option>1 à 3 mois</option><option>Plus de 3 mois</option><option>Pas de date fixe</option></select></div>
+            <div class="field full"><label for="d-lieu">Lieu du projet <span class="opt">facultatif</span></label><input id="d-lieu" name="localisation" maxlength="150" placeholder="Ville, commune ou province"></div>
+
+            <div class="ent-only full" id="entBlock" hidden>
+              <div class="fgrid">
+                <div class="field"><label for="d-ent-nom">Entreprise / organisation</label><input id="d-ent-nom" name="entreprise" autocomplete="organization" maxlength="150"><small class="ferr" data-for="entreprise"></small></div>
+                <div class="field"><label for="d-secteur">Secteur <span class="opt">facultatif</span></label><input id="d-secteur" name="secteur" maxlength="120" placeholder="Mines, agriculture, santé…"></div>
+                <div class="field"><label for="d-taille">Effectif <span class="opt">facultatif</span></label><select id="d-taille" name="taille"><option value="">Non précisé</option><option>1 à 10</option><option>11 à 50</option><option>51 à 250</option><option>Plus de 250</option></select></div>
+                <div class="field"><label for="d-fonction">Votre fonction <span class="opt">facultatif</span></label><input id="d-fonction" name="fonction" autocomplete="organization-title" maxlength="120"></div>
+              </div>
+            </div>
+
+            <div class="field"><label for="d-nom">Nom et prénom</label><input id="d-nom" name="nom" autocomplete="name" required maxlength="120"><small class="ferr" data-for="nom"></small></div>
+            <div class="field"><label for="d-tel">Téléphone (WhatsApp)</label><input id="d-tel" name="telephone" type="tel" autocomplete="tel" required placeholder="+243 …" maxlength="30"><small class="ferr" data-for="telephone"></small></div>
+            <div class="field full"><label for="d-email">E-mail</label><input id="d-email" name="email" type="email" autocomplete="email" required maxlength="200"><small class="ferr" data-for="email"></small></div>
+            <div class="hp" aria-hidden="true"><label for="d-site">Site web</label><input id="d-site" name="site_web" tabindex="-1" autocomplete="off"></div>
+          </div>
+          <div class="factions"><button class="btn btn-blue" type="submit">Demander mon devis</button><p class="fstatus" role="status" aria-live="polite"></p></div>
+          <div class="done" id="devisDone" hidden>
+            <span class="code">&lt;reçu /&gt;</span>
+            <h3>Demande enregistrée</h3>
+            <p>Référence <b class="mono" id="dd-ref"></b>. Nous étudions votre besoin et revenons vers vous rapidement.</p>
+            <button class="btn btn-ghost" type="button" id="devisAgain">Faire une autre demande</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <section id="contact" class="contact">
     <div class="wrap">
       <div class="mt-frame"><span class="chev l"></span><span class="chev r"></span>
@@ -1098,6 +1197,32 @@ document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click
       else{erreurs(of,x.j.champs);statut(of,'bad',x.j.erreur||'Erreur.');}
     }).catch(function(){var p=PRIX[d.offre]||['','',''];statut(of,'bad',repli('Bonjour MS Techniker, je souhaite commander l\'offre serveur '+p[2]+' pour '+d.duree_mois+' mois. Nom : '+(d.nom||'')+', e-mail : '+(d.email||'')+', tél : '+(d.telephone||'')+'.'));})
     .then(function(){b.disabled=false;});});
+})();
+</script>
+<script>
+/* Demande de devis (POST /api/devis) */
+(function(){
+  var f=document.getElementById('devisForm');if(!f)return;
+  var meta=document.querySelector('meta[name="mst-api"]'),API=((meta&&meta.content)||'').replace(/\/$/,'');
+  var ent=document.getElementById('entBlock'),done=document.getElementById('devisDone');
+  function maj(){var e=f.type_client.value==='entreprise';ent.hidden=!e;}
+  f.querySelectorAll('input[name=type_client]').forEach(function(r){r.addEventListener('change',maj);});maj();
+  function d(){var o={};new FormData(f).forEach(function(v,k){o[k]=String(v);});return o;}
+  function err(ch){f.querySelectorAll('.field').forEach(function(x){x.classList.remove('bad');});
+    f.querySelectorAll('.ferr').forEach(function(e){var c=ch&&ch[e.dataset.for];e.textContent=c||'';if(c)e.closest('.field').classList.add('bad');});
+    var p=f.querySelector('.field.bad input, .field.bad textarea, .field.bad select');if(p)p.focus();}
+  function st(cls,html){var p=f.querySelector('.fstatus');p.className='fstatus '+(cls||'');p.innerHTML=html;}
+  function corps(on){[].forEach.call(f.children,function(c){if(c!==done)c.hidden=!on;});done.hidden=on;}
+  f.addEventListener('submit',function(e){e.preventDefault();var x=d(),b=f.querySelector('[type=submit]');b.disabled=true;st('','Envoi…');
+    fetch(API+'/api/devis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(x)})
+      .then(function(r){if((r.headers.get('content-type')||'').indexOf('json')<0)throw new Error('hors-ligne');return r.json().then(function(j){return{r:r,j:j};});})
+      .then(function(o){if(o.r.ok){document.getElementById('dd-ref').textContent=o.j.reference;f.reset();maj();err({});st('','');corps(false);done.querySelector('button').focus();}
+        else{err(o.j.champs);st('bad',o.j.erreur||'Erreur.');}})
+      .catch(function(){var sel=f.service.options[f.service.selectedIndex];
+        var t='Bonjour MS Techniker, je souhaite un devis ('+(x.type_client==='entreprise'?'entreprise '+(x.entreprise||''):'particulier')+') pour : '+(sel&&sel.value?sel.text:'')+'. '+(x.description||'')+' — '+(x.nom||'')+', '+(x.telephone||'')+', '+(x.email||'');
+        st('bad','Le serveur ne répond pas. <a href="https://wa.me/243985651544?text='+encodeURIComponent(t)+'">Envoyez votre demande par WhatsApp</a>.');})
+      .then(function(){b.disabled=false;});});
+  document.getElementById('devisAgain').addEventListener('click',function(){corps(true);f.service.focus();});
 })();
 </script>
 </body>

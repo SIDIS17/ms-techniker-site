@@ -5,7 +5,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const { ouvrir, STATUTS_COMMANDE, STATUTS_MESSAGE } = require('./db');
+const { ouvrir, STATUTS_COMMANDE, STATUTS_MESSAGE, STATUTS_DEVIS } = require('./db');
 const { OFFRES, parId } = require('./offres');
 const mailer = require('./mailer');
 
@@ -19,6 +19,7 @@ function config(env = process.env) {
     mailTo: env.MAIL_TO || 'mstechniker96@gmail.com',
     confirmerClient: env.CONFIRMATION_CLIENT !== 'false',
     trustProxy: env.TRUST_PROXY === 'true',
+    limiteEnvois: Number(env.LIMITE_ENVOIS || 5),
     smtp: { host: env.SMTP_HOST, port: env.SMTP_PORT || 465, user: env.SMTP_USER, pass: env.SMTP_PASS, from: env.SMTP_FROM },
   };
 }
@@ -26,6 +27,19 @@ function config(env = process.env) {
 // ---------- utilitaires ----------
 const EMAIL = /^[^\s@<>"']{1,64}@[^\s@<>"']{1,190}\.[a-z]{2,24}$/i;
 const TEL = /^\+?[0-9 ().-]{6,22}$/;
+const SERVICES = {
+  energie: 'Énergie (micro-hydro, solaire, stockage)',
+  embarque: 'Systèmes embarqués et automatisme',
+  ia: 'Intelligence artificielle et données',
+  iot: 'IoT et supervision à distance',
+  serveurs: 'Serveurs, hébergement et cloud',
+  web: 'Site web ou application',
+  formation: 'Formation et accompagnement',
+  autre: 'Autre besoin',
+};
+const BUDGETS = ['< 500 $', '500 – 2 000 $', '2 000 – 10 000 $', '> 10 000 $', 'À définir'];
+const DELAIS = ['Urgent (< 1 mois)', '1 à 3 mois', 'Plus de 3 mois', 'Pas de date fixe'];
+const TAILLES = ['1 à 10', '11 à 50', '51 à 250', 'Plus de 250'];
 const txt = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
 function envoyerJson(res, code, data, extra = {}) {
@@ -73,7 +87,7 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': '
 function creerApp(cfg = config(), deps = {}) {
   const store = deps.store || ouvrir(cfg.dbPath);
   const envoyerMail = deps.envoyerMail || ((m) => mailer.envoyer(cfg.smtp, m));
-  const limiteForm = limiteur(5, 10 * 60 * 1000);
+  const limiteForm = limiteur(cfg.limiteEnvois || 5, 10 * 60 * 1000);
   const limiteAdmin = limiteur(60, 60 * 1000);
 
   const notifier = (m) => envoyerMail(m).catch((e) => console.error('[mail]', e.message));
@@ -106,6 +120,7 @@ function creerApp(cfg = config(), deps = {}) {
 
     if (r === '/api/sante' && m === 'GET') return envoyerJson(res, 200, { ok: true, email: mailer.configure(cfg.smtp) }, entetes);
     if (r === '/api/offres' && m === 'GET') return envoyerJson(res, 200, { offres: OFFRES }, entetes);
+    if (r === '/api/services' && m === 'GET') return envoyerJson(res, 200, { services: SERVICES, budgets: BUDGETS, delais: DELAIS, tailles: TAILLES }, entetes);
 
     if (r === '/api/contact' && m === 'POST') {
       if (!limiteForm(ipDe(req))) return envoyerJson(res, 429, { erreur: 'Trop de messages envoyés. Réessayez dans quelques minutes.' }, entetes);
@@ -162,6 +177,51 @@ function creerApp(cfg = config(), deps = {}) {
       return envoyerJson(res, 201, { ok: true, reference, offre: offre.nom, total_usd: total }, entetes);
     }
 
+    if (r === '/api/devis' && m === 'POST') {
+      if (!limiteForm(ipDe(req))) return envoyerJson(res, 429, { erreur: 'Trop de demandes envoyées. Réessayez dans quelques minutes.' }, entetes);
+      const b = await lireJson(req);
+      if (txt(b.site_web, 200)) return envoyerJson(res, 201, { ok: true, reference: 'DEV-0000' }, entetes);
+      const d = {
+        typeClient: b.type_client === 'entreprise' ? 'entreprise' : (b.type_client === 'particulier' ? 'particulier' : ''),
+        service: SERVICES[b.service] ? b.service : '',
+        description: txt(b.description, 5000),
+        budget: BUDGETS.includes(b.budget) ? b.budget : '',
+        delai: DELAIS.includes(b.delai) ? b.delai : '',
+        localisation: txt(b.localisation, 150),
+        nom: txt(b.nom, 120), email: txt(b.email, 200), telephone: txt(b.telephone, 30),
+        entreprise: txt(b.entreprise, 150), secteur: txt(b.secteur, 120),
+        taille: TAILLES.includes(b.taille) ? b.taille : '', fonction: txt(b.fonction, 120),
+      };
+      const erreurs = {};
+      if (!d.typeClient) erreurs.type_client = 'Particulier ou entreprise ?';
+      if (!d.service) erreurs.service = 'Choisissez un service.';
+      if (d.description.length < 20) erreurs.description = 'Décrivez votre besoin (20 caractères minimum).';
+      if (d.nom.length < 2) erreurs.nom = 'Indiquez votre nom.';
+      if (!EMAIL.test(d.email)) erreurs.email = 'Adresse e-mail invalide.';
+      if (!TEL.test(d.telephone)) erreurs.telephone = 'Numéro de téléphone requis.';
+      if (d.typeClient === 'entreprise' && d.entreprise.length < 2) erreurs.entreprise = 'Indiquez le nom de l\'entreprise.';
+      if (Object.keys(erreurs).length) return envoyerJson(res, 400, { erreur: 'Formulaire incomplet.', champs: erreurs }, entetes);
+      if (d.typeClient === 'particulier') { d.entreprise = ''; d.secteur = ''; d.taille = ''; d.fonction = ''; }
+      const { id, reference } = store.ajouterDevis(d);
+      const qui = d.typeClient === 'entreprise' ? `${d.entreprise} (${d.nom}${d.fonction ? ', ' + d.fonction : ''})` : `${d.nom} (particulier)`;
+      notifier({
+        to: cfg.mailTo, replyTo: d.email,
+        subject: `Demande de devis ${reference} : ${SERVICES[d.service]}`,
+        text: `Nouvelle demande de devis ${reference}\n\nClient : ${qui}\n` +
+          (d.typeClient === 'entreprise' ? `Secteur : ${d.secteur || '-'}\nTaille : ${d.taille || '-'}\n` : '') +
+          `E-mail : ${d.email}\nTéléphone : ${d.telephone}\nLocalisation : ${d.localisation || '-'}\n\n` +
+          `Service : ${SERVICES[d.service]}\nBudget : ${d.budget || '-'}\nDélai : ${d.delai || '-'}\n\nBesoin :\n${d.description}\n`,
+      });
+      if (cfg.confirmerClient) {
+        notifier({
+          to: d.email, replyTo: cfg.mailTo,
+          subject: `MS Techniker : demande de devis ${reference} reçue`,
+          text: `Bonjour ${d.nom},\n\nNous avons bien reçu votre demande de devis (${SERVICES[d.service]}).\nRéférence : ${reference}\n\nUn membre de l'équipe étudie votre besoin et vous recontacte rapidement.\n\nMS Techniker\nmstechniker96@gmail.com · +243 985 651 544 (WhatsApp)\n`,
+        });
+      }
+      return envoyerJson(res, 201, { ok: true, reference }, entetes);
+    }
+
     // ---------- admin ----------
     if (r.startsWith('/api/admin/')) {
       if (!limiteAdmin(ipDe(req))) return envoyerJson(res, 429, { erreur: 'Trop de requêtes.' }, entetes);
@@ -169,6 +229,19 @@ function creerApp(cfg = config(), deps = {}) {
       if (r === '/api/admin/stats' && m === 'GET') return envoyerJson(res, 200, store.stats(), entetes);
       if (r === '/api/admin/commandes' && m === 'GET') return envoyerJson(res, 200, { commandes: store.listerCommandes() }, entetes);
       if (r === '/api/admin/messages' && m === 'GET') return envoyerJson(res, 200, { messages: store.listerMessages() }, entetes);
+      if (r === '/api/admin/devis' && m === 'GET') return envoyerJson(res, 200, { devis: store.listerDevis(), services: SERVICES }, entetes);
+      const md = r.match(/^\/api\/admin\/devis\/(\d+)$/);
+      if (md && m === 'PATCH') {
+        const b = await lireJson(req);
+        if (b.statut !== undefined && !STATUTS_DEVIS.includes(b.statut)) return envoyerJson(res, 400, { erreur: `Statut : ${STATUTS_DEVIS.join(', ')}` }, entetes);
+        let montant;
+        if (b.montant_usd !== undefined && b.montant_usd !== null && b.montant_usd !== '') {
+          montant = Number.parseInt(b.montant_usd, 10);
+          if (!Number.isFinite(montant) || montant < 0) return envoyerJson(res, 400, { erreur: 'Montant invalide.' }, entetes);
+        }
+        const maj = store.majDevis(Number(md[1]), { statut: b.statut, montant, note: b.note_interne !== undefined ? txt(b.note_interne, 2000) : undefined });
+        return maj ? envoyerJson(res, 200, maj, entetes) : envoyerJson(res, 404, { erreur: 'Demande introuvable.' }, entetes);
+      }
       let mm = r.match(/^\/api\/admin\/commandes\/(\d+)$/);
       if (mm && m === 'PATCH') {
         const b = await lireJson(req);

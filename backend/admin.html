@@ -44,7 +44,10 @@ td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 .s-nouvelle,.s-nouveau{color:var(--blue);border-color:#b9c9f4;background:var(--blue-soft)}
 .s-en_cours{color:var(--warn);border-color:#ecd3a6;background:#fdf6e9}
 .s-active,.s-traite{color:var(--ok);border-color:#a9dcc6;background:#ecf8f2}
-.s-annulee{color:var(--muted);border-color:var(--line);background:#f3f4f7}
+.s-en_etude{color:var(--warn);border-color:#ecd3a6;background:#fdf6e9}
+.s-envoye{color:#6b46c1;border-color:#d6c8f5;background:#f4effd}
+.s-accepte{color:var(--ok);border-color:#a9dcc6;background:#ecf8f2}
+.s-refuse,.s-annulee{color:var(--muted);border-color:var(--line);background:#f3f4f7}
 .small{font-size:13px;color:var(--muted)}
 .msg{white-space:pre-wrap;max-width:460px}
 select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:#fff}
@@ -70,6 +73,7 @@ select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background
   <div class="tiles" id="tiles"></div>
   <div class="tabs" role="tablist">
     <button class="btn" role="tab" id="tabCmd" aria-selected="true">Commandes</button>
+    <button class="btn" role="tab" id="tabDev" aria-selected="false">Devis</button>
     <button class="btn" role="tab" id="tabMsg" aria-selected="false">Messages</button>
   </div>
   <div class="wrap" id="table"></div>
@@ -81,9 +85,10 @@ select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background
   var KEY='mst_admin_token',token='';
   try{token=sessionStorage.getItem(KEY)||'';}catch(e){}
   var $=function(id){return document.getElementById(id);};
-  var vue='commandes',donnees={commandes:[],messages:[]};
+  var vue='commandes',donnees={commandes:[],messages:[],devis:[]},SERVICES={};
   var STATUTS_C=[['nouvelle','Nouvelle'],['en_cours','En cours'],['active','Active'],['annulee','Annulée']];
   var STATUTS_M=[['nouveau','Nouveau'],['traite','Traité']];
+  var STATUTS_D=[['nouveau','Nouveau'],['en_etude','En étude'],['envoye','Devis envoyé'],['accepte','Accepté'],['refuse','Refusé']];
   var OFFRES={starter:'Starter',business:'Business',pro:'Pro',enterprise:'Enterprise'};
 
   function api(path,opt){opt=opt||{};
@@ -100,7 +105,7 @@ select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background
     s.addEventListener('change',function(){onChange(s.value);});return s;}
 
   function tiles(st){var t=$('tiles');t.textContent='';
-    [['Commandes nouvelles',st.commandes_nouvelles],['Serveurs actifs',st.commandes_actives],['Revenu mensuel actif',st.revenu_mensuel_usd+' $'],['Messages non traités',st.messages_nouveaux],['Commandes au total',st.commandes]]
+    [['Devis à traiter',st.devis_nouveaux],['Devis acceptés',st.devis_acceptes_usd+' $'],['Commandes nouvelles',st.commandes_nouvelles],['Serveurs actifs',st.commandes_actives],['Revenu mensuel actif',st.revenu_mensuel_usd+' $'],['Messages non traités',st.messages_nouveaux]]
       .forEach(function(x){t.appendChild(el('div',{cls:'tile'},[el('span',{text:x[0]}),el('b',{text:String(x[1])})]));});}
 
   function tableCommandes(){var l=donnees.commandes;if(!l.length)return el('div',{cls:'empty',text:'Aucune commande pour le moment.'});
@@ -129,12 +134,33 @@ select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background
       el('td',null,[pill(m.statut,STATUTS_M),el('div',{style:'margin-top:6px'},[selectStatut(m.statut,STATUTS_M,function(v){maj('/api/admin/messages/'+m.id,{statut:v});},'Statut message '+m.id)])])]));});
     return el('table',null,[el('thead',null,[el('tr',null,['Reçu','De','Message','Statut'].map(function(h){return el('th',{scope:'col',text:h});}))]),tb]);}
 
-  function rendre(){var w=$('table');w.textContent='';w.appendChild(vue==='commandes'?tableCommandes():tableMessages());
-    $('tabCmd').setAttribute('aria-selected',vue==='commandes');$('tabMsg').setAttribute('aria-selected',vue==='messages');}
+  function tableDevis(){var l=donnees.devis;if(!l.length)return el('div',{cls:'empty',text:'Aucune demande de devis pour le moment.'});
+    var tb=el('tbody');
+    l.forEach(function(d){
+      var mont=el('input',{type:'number',min:'0',step:'1',value:d.montant_usd==null?'':d.montant_usd,placeholder:'Montant $','aria-label':'Montant du devis '+d.reference});
+      mont.style.cssText='width:110px;padding:5px 8px;border:1px solid var(--line);border-radius:8px';
+      mont.addEventListener('change',function(){maj('/api/admin/devis/'+d.id,{montant_usd:mont.value});});
+      var note=el('input',{value:d.note_interne||'',placeholder:'Note interne','aria-label':'Note interne '+d.reference});
+      note.style.cssText='width:100%;margin-top:6px;padding:5px 8px;border:1px solid var(--line);border-radius:8px';
+      note.addEventListener('change',function(){maj('/api/admin/devis/'+d.id,{note_interne:note.value});});
+      var client=d.type_client==='entreprise'
+        ?[el('b',{text:d.entreprise}),el('div',{cls:'small',text:[d.nom,d.fonction].filter(Boolean).join(' · ')}),el('div',{cls:'small',text:[d.secteur,d.taille?d.taille+' pers.':''].filter(Boolean).join(' · ')})]
+        :[el('b',{text:d.nom}),el('div',{cls:'small',text:'Particulier'})];
+      tb.appendChild(el('tr',null,[
+        el('td',null,[el('div',{cls:'ref',text:d.reference}),el('div',{cls:'small',text:date(d.cree_le)})]),
+        el('td',null,client),
+        el('td',null,[el('div',null,[el('a',{href:'mailto:'+d.email,text:d.email})]),el('div',null,[el('a',{href:'https://wa.me/'+String(d.telephone).replace(/[^0-9]/g,''),text:d.telephone})]),el('div',{cls:'small',text:d.localisation||''})]),
+        el('td',null,[el('b',{text:SERVICES[d.service]||d.service}),el('div',{cls:'msg small',text:d.description}),el('div',{cls:'small',text:[d.budget,d.delai].filter(Boolean).join(' · ')})]),
+        el('td',null,[pill(d.statut,STATUTS_D),el('div',{style:'margin-top:6px'},[selectStatut(d.statut,STATUTS_D,function(v){maj('/api/admin/devis/'+d.id,{statut:v});},'Statut '+d.reference)])]),
+        el('td',{style:'min-width:170px'},[mont,note])]));});
+    return el('table',null,[el('thead',null,[el('tr',null,['Référence','Client','Contact','Besoin','Statut','Devis'].map(function(h){return el('th',{scope:'col',text:h});}))]),tb]);}
+
+  function rendre(){var w=$('table');w.textContent='';w.appendChild(vue==='commandes'?tableCommandes():vue==='devis'?tableDevis():tableMessages());
+    $('tabCmd').setAttribute('aria-selected',vue==='commandes');$('tabDev').setAttribute('aria-selected',vue==='devis');$('tabMsg').setAttribute('aria-selected',vue==='messages');}
 
   function charger(){$('status').textContent='Chargement…';
-    return Promise.all([api('/api/admin/stats'),api('/api/admin/commandes'),api('/api/admin/messages')]).then(function(r){
-      tiles(r[0]);donnees.commandes=r[1].commandes;donnees.messages=r[2].messages;rendre();
+    return Promise.all([api('/api/admin/stats'),api('/api/admin/commandes'),api('/api/admin/messages'),api('/api/admin/devis')]).then(function(r){
+      tiles(r[0]);donnees.commandes=r[1].commandes;donnees.messages=r[2].messages;donnees.devis=r[3].devis;SERVICES=r[3].services||{};rendre();
       $('status').textContent='Mis à jour à '+new Date().toLocaleTimeString('fr-FR');});}
 
   function maj(path,body){api(path,{method:'PATCH',body:body}).then(charger).catch(function(e){if(e.message!=='401')$('status').textContent='Erreur : '+e.message;});}
@@ -150,6 +176,7 @@ select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background
   $('refresh').addEventListener('click',charger);
   $('tabCmd').addEventListener('click',function(){vue='commandes';rendre();});
   $('tabMsg').addEventListener('click',function(){vue='messages';rendre();});
+  $('tabDev').addEventListener('click',function(){vue='devis';rendre();});
   if(token)charger().then(connecte).catch(function(){});
 })();
 </script>

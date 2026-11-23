@@ -22,9 +22,11 @@ Dockerfile, docker-compose.yml
 |---|---|
 | `POST /api/contact` | enregistre un message du site et l'envoie à `MAIL_TO` |
 | `POST /api/commandes` | enregistre une demande de serveur, renvoie une référence `MST-AAAA-NNNN`, prévient l'équipe et confirme au client par e-mail |
+| `POST /api/devis` | demande de devis d'un particulier ou d'une entreprise, référence `DEV-AAAA-NNNN`, e-mails à l'équipe et au client |
 | `GET /api/offres` | liste des offres et prix |
+| `GET /api/services` | services, budgets et délais proposés dans le formulaire de devis |
 | `GET /api/sante` | état du service |
-| `/admin` | tableau de bord protégé par `ADMIN_TOKEN` : commandes, messages, statuts, notes, revenu mensuel actif |
+| `/admin` | tableau de bord protégé par `ADMIN_TOKEN` : devis (statut, montant, note), commandes, messages, revenu mensuel actif, montant des devis acceptés |
 
 Protections : validation des champs, pot de miel anti-robots, limite de 5 envois par IP toutes les 10 minutes, requêtes limitées à 20 Ko, requêtes SQL paramétrées, jeton admin comparé en temps constant, fichiers du backend et base jamais servis.
 
@@ -34,7 +36,7 @@ cd backend
 cp .env.example .env        # puis remplir ADMIN_TOKEN (et SMTP_PASS pour les e-mails)
 set -a; . ./.env; set +a
 npm start                   # http://localhost:8080  et  http://localhost:8080/admin
-npm test                    # 9 tests
+npm test                    # 11 tests
 ```
 Sans `SMTP_PASS`, tout fonctionne mais aucun e-mail n'est envoyé (les demandes restent visibles dans /admin).
 

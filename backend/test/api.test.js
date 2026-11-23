@@ -8,7 +8,7 @@ let srv, base;
 const mails = [];
 
 before(async () => {
-  const cfg = { ...config({}), dbPath: ':memory:', adminToken: 'jeton-test-123', siteRoot: path.resolve(__dirname, '..', '..') };
+  const cfg = { ...config({}), dbPath: ':memory:', limiteEnvois: 12, adminToken: 'jeton-test-123', siteRoot: path.resolve(__dirname, '..', '..') };
   srv = creerApp(cfg, { envoyerMail: async (m) => { mails.push(m); return { envoye: true }; } });
   await new Promise((r) => srv.listen(0, r));
   base = `http://127.0.0.1:${srv.address().port}`;
@@ -76,6 +76,32 @@ test('admin : 401 sans jeton, liste et mise à jour avec jeton', async () => {
   assert.equal((await adm(`/api/admin/commandes/${id}`, { method: 'PATCH', body: JSON.stringify({ statut: 'nimporte' }) })).status, 400);
 });
 
+test('devis entreprise : référence DEV, e-mails, champs entreprise gardés', async () => {
+  const avant = mails.length;
+  const r = await post('/api/devis', { type_client: 'entreprise', service: 'energie', description: 'Étude d\'une micro-centrale pour un site de 40 foyers.', budget: '2 000 – 10 000 $', delai: '1 à 3 mois', localisation: 'Kwilu', nom: 'Marie T.', fonction: 'Directrice', email: 'marie@coop.cd', telephone: '+243 820 000 000', entreprise: 'Coop Énergie', secteur: 'Agriculture', taille: '11 à 50' });
+  assert.equal(r.status, 201);
+  assert.match((await r.json()).reference, /^DEV-\d{4}-0001$/);
+  assert.equal(mails.length - avant, 2);
+  assert.match(mails[mails.length - 2].text, /Coop Énergie/);
+});
+
+test('devis particulier : champs entreprise ignorés ; erreurs signalées', async () => {
+  const ok = await post('/api/devis', { type_client: 'particulier', service: 'web', description: 'Je veux un site pour mon atelier de couture.', nom: 'Paul N.', email: 'paul@example.com', telephone: '0990000000', entreprise: 'ne doit pas rester' });
+  assert.equal(ok.status, 201);
+  const bad = await post('/api/devis', { type_client: 'entreprise', service: 'inconnu', description: 'court', nom: 'A', email: 'x', telephone: '' });
+  assert.equal(bad.status, 400);
+  const j = await bad.json();
+  for (const k of ['service', 'description', 'nom', 'email', 'telephone', 'entreprise']) assert.ok(j.champs[k], k);
+  const l = await (await adm('/api/admin/devis')).json();
+  assert.equal(l.devis.length, 2);
+  assert.equal(l.devis[0].entreprise, null);
+  const p = await adm(`/api/admin/devis/${l.devis[1].id}`, { method: 'PATCH', body: JSON.stringify({ statut: 'accepte', montant_usd: 4500 }) });
+  assert.equal((await p.json()).montant_usd, 4500);
+  const s = await (await adm('/api/admin/stats')).json();
+  assert.equal(s.devis, 2);
+  assert.equal(s.devis_acceptes_usd, 4500);
+});
+
 test('site statique servi, fichiers sensibles bloqués', async () => {
   const i = await fetch(base + '/');
   assert.equal(i.status, 200);
@@ -86,9 +112,8 @@ test('site statique servi, fichiers sensibles bloqués', async () => {
   assert.equal((await fetch(base + '/%2e%2e/%2e%2e/etc/passwd')).status, 404);
 });
 
-test('limite anti-abus : 429 après 5 envois', async () => {
-  // les tests précédents ont déjà consommé des envois pour cette IP
+test('limite anti-abus : 429 une fois la limite atteinte', async () => {
   let dernier;
-  for (let i = 0; i < 6; i++) dernier = await post('/api/contact', { nom: 'Test', email: 't@t.cd', message: 'message de test numéro ' + i });
+  for (let i = 0; i < 13; i++) dernier = await post('/api/contact', { nom: 'Test', email: 't@t.cd', message: 'message de test numéro ' + i });
   assert.equal(dernier.status, 429);
 });
