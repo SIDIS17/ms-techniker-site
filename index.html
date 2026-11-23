@@ -154,6 +154,9 @@ section{padding:clamp(56px,8vw,104px) 0}
 .shots figure{margin:0;display:flex;flex-direction:column;gap:8px}
 .shots img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;border:1px solid var(--line);background:#e9edf5}
 .shots figure:first-child img{object-fit:contain;background:linear-gradient(180deg,#b9c7e3,#eef2f9)}
+.shots-2{grid-template-columns:1.6fr 1fr}
+.shots-2 img,.shots-2 figure:first-child img{aspect-ratio:auto;height:300px;object-fit:cover;background:#e9edf5}
+@media (max-width:640px){.shots-2 img,.shots-2 figure:first-child img{height:150px}}
 .shots figcaption{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
 @media (max-width:900px){.shots{grid-template-columns:1fr 1fr}}
 .teamphoto{margin:0 0 20px;display:grid;grid-template-columns:1.6fr 1fr;gap:28px;align-items:end;background:var(--ink);color:var(--on-ink);border-radius:var(--r);overflow:hidden}
@@ -640,8 +643,15 @@ footer .brand span{font-size:17px}
             <ul class="facts">
               <li><span>mesures</span><span>V · I · P</span></li>
               <li><span>cible</span><span>ESP32</span></li>
+              <li><span>présenté au</span><span>PEAK 2026</span></li>
             </ul>
           </div>
+          <figure class="gallery" aria-label="Adaptron en images">
+            <div class="shots shots-2">
+              <figure><img src="img/adaptron-peak2026.jpg" alt="Présentation d'Adaptron, système de prédiction et contrôle énergétique, devant une salle au PEAK 2026" loading="lazy"><figcaption>PEAK 2026 · présentation d'Adaptron</figcaption></figure>
+              <figure><img src="img/adaptron-prototype.jpg" alt="Prototype Adaptron : carte ESP32 et câblage sur plaque d'essai" loading="lazy"><figcaption>Prototype · ESP32 sur plaque d'essai</figcaption></figure>
+            </div>
+          </figure>
         </article>
         <article class="project">
           <div class="pname">Elikya-Grid<small>diagnostic par IA</small></div>
@@ -807,6 +817,7 @@ footer .brand span{font-size:17px}
         <p>L'avancement de nos projets.</p>
       </div>
       <div class="news">
+        <article class="post"><time datetime="2026">2026</time><div><h3>Adaptron présenté au PEAK 2026</h3><p>Notre système de prédiction et de contrôle énergétique, présenté avec le Club Électricité et Automatique.</p></div></article>
         <article class="post"><time datetime="2025">2025</time><div><h3>Sixaxis primé au Space Apps Challenge</h3><p>2<sup>e</sup> place et prix Best Use of Technology au NASA Space Apps Challenge RDC 2025.</p></div></article>
         <article class="post"><span class="when">réalisé</span><div><h3>Notre stand au Forum du génie scientifique congolais</h3><p>L'équipe a présenté au public un coffret de démonstration conçu et câblé à l'atelier.</p></div></article>
         <article class="post"><time datetime="2026-11">nov. 2026</time><div><h3>Le site MS Techniker est en ligne</h3><p>Nos projets, nos sites d'intervention et nos cinq équipes sont désormais présentés sur une même page.</p></div></article>
