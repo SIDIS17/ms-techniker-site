@@ -303,6 +303,10 @@ body.modal-open{overflow:hidden}
 .dform .done h3{font-size:28px;text-transform:uppercase;margin:6px 0}
 @media (max-width:900px){.devis{grid-template-columns:1fr}.devis-aside{position:static}}
 @media (max-width:520px){.seg-big{grid-template-columns:1fr 1fr}.seg-big label{padding:12px}.seg-big label b{font-size:17px}.seg-big label span{font-size:12px}}
+.award-b{grid-template-columns:auto minmax(0,1fr);margin-top:14px}
+.award-medal{margin:0 0 0 8px;width:150px;height:150px;border-radius:50%;overflow:hidden;box-shadow:0 10px 24px -10px rgba(12,14,19,.5);border:4px solid #f3c623}
+.award-medal img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
+@media (max-width:480px){.award-b{grid-template-columns:1fr}.award-medal{width:110px;height:110px;margin:0}}
 /* sites */
 .sites{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .site{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
@@ -565,6 +569,14 @@ footer .brand span{font-size:17px}
           <figure class="award-photo"><img src="img/space-apps-equipe.jpg" alt="Participants sur scène lors de la remise des prix du Space Apps Challenge RDC 2025" loading="lazy"><figcaption>Remise des prix, Silikin Village</figcaption></figure>
         </div>
       </div>
+      <div class="award award-b">
+        <figure class="award-medal"><img src="img/medaille-merite.jpg" alt="Médaille de bronze du Mérite des Arts, Sciences et Lettres, ruban rouge, bleu et jaune, dans son écrin" loading="lazy"></figure>
+        <div class="award-txt">
+          <span class="code">distinction · Forum du génie scientifique congolais · 2 sept. 2026</span>
+          <h2>Médaille de bronze du <em>Mérite des Arts, Sciences et Lettres</em></h2>
+          <p>Décernée à Kevin Mbuse Angembo, fondateur de MS Techniker, pour ses mérites scientifiques, par la Chancellerie des Ordres Nationaux de la République démocratique du Congo.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -817,6 +829,7 @@ footer .brand span{font-size:17px}
         <p>L'avancement de nos projets.</p>
       </div>
       <div class="news">
+        <article class="post"><time datetime="2026-09-02">2 sept. 2026</time><div><h3>Médaille du Mérite scientifique</h3><p>Kevin Mbuse Angembo, notre fondateur, reçoit la médaille de bronze du Mérite des Arts, Sciences et Lettres au Forum du génie scientifique congolais.</p></div></article>
         <article class="post"><time datetime="2026">2026</time><div><h3>Adaptron présenté au PEAK 2026</h3><p>Notre système de prédiction et de contrôle énergétique, présenté avec le Club Électricité et Automatique.</p></div></article>
         <article class="post"><time datetime="2025">2025</time><div><h3>Sixaxis primé au Space Apps Challenge</h3><p>2<sup>e</sup> place et prix Best Use of Technology au NASA Space Apps Challenge RDC 2025.</p></div></article>
         <article class="post"><span class="when">réalisé</span><div><h3>Notre stand au Forum du génie scientifique congolais</h3><p>L'équipe a présenté au public un coffret de démonstration conçu et câblé à l'atelier.</p></div></article>
