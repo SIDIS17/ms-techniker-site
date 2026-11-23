@@ -33,7 +33,7 @@
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
-img{max-width:100%;display:block}
+img{max-width:100%;height:auto;display:block}
 a{color:inherit}
 :focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(16px,4vw,40px)}
@@ -308,6 +308,22 @@ body.modal-open{overflow:hidden}
 .award-medal{margin:0 0 0 8px;width:150px;height:150px;border-radius:50%;overflow:hidden;box-shadow:0 10px 24px -10px rgba(12,14,19,.5);border:4px solid #f3c623}
 .award-medal img{width:100%;height:100%;object-fit:cover;object-position:center 40%}
 @media (max-width:480px){.award-b{grid-template-columns:1fr}.award-medal{width:110px;height:110px;margin:0}}
+/* visionneuse photo */
+.zoomable{cursor:zoom-in;transition:filter .2s ease,transform .2s ease}
+.zoomable:hover{filter:brightness(1.06)}
+.zoomable:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.lb{position:fixed;inset:0;z-index:80;background:rgba(6,8,12,.94);display:grid;grid-template-rows:auto 1fr auto;color:#eef1f6}
+.lb[hidden]{display:none!important}
+.lb-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-family:var(--f-mono);font-size:12.5px;color:#9aa3b5}
+.lb-x,.lb-nav{width:44px;height:44px;border-radius:50%;border:1px solid #2c3343;background:rgba(21,25,35,.8);color:#fff;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.lb-x:hover,.lb-nav:hover{border-color:#7ea0ff}
+.lb-stage{position:relative;display:grid;place-items:center;min-height:0;padding:0 64px;touch-action:pan-y}
+.lb-stage img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%)}
+.lb-prev{left:12px}.lb-next{right:12px}
+.lb-cap{padding:14px 20px calc(18px + env(safe-area-inset-bottom));text-align:center;font-size:15px;max-width:80ch;margin:0 auto}
+.lb-cap b{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.02em;margin-right:6px}
+@media (max-width:640px){.lb-stage{padding:0 8px}.lb-nav{display:none}}
 /* sites */
 .sites{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .site{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
@@ -453,12 +469,12 @@ footer .brand span{font-size:17px}
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="MS Techniker, accueil">
-      <span class="markwrap"><img src="img/mark.png" alt=""></span>
-      <img class="wordmark" src="img/wordmark.png" alt="ms techniker">
+      <span class="markwrap"><img src="img/mark.png" alt="" width="256" height="237" decoding="async"></span>
+      <img class="wordmark" src="img/wordmark.png" alt="ms techniker" width="640" height="79" decoding="async">
     </a>
     <ul class="links">
       <li><a href="#domaines">Domaines</a></li>
-      <li><a href="#projets">Projets</a></li>
+      <li><a href="#projets">Adaptron</a></li>
       <li><a href="#sites">Sites</a></li>
       <li><a href="#equipes">Équipes</a></li>
       <li><a href="#serveurs">Serveurs</a></li>
@@ -470,7 +486,7 @@ footer .brand span{font-size:17px}
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Ouvrir le menu"><span></span><span></span><span></span></button>
   </div>
   <nav class="mnav" id="mnav" aria-label="Menu mobile"><div class="mnav-inner">
-    <a href="#devis">Demander un devis</a><a href="#projets">Projets</a><a href="#serveurs">Offres serveurs</a><a href="#equipes">Équipes</a><a href="#atelier">Atelier</a><a href="#actualites">Actualités</a><a href="#domaines">Domaines</a><a href="#sites">Sites</a>
+    <a href="#devis">Demander un devis</a><a href="#projets">Adaptron</a><a href="#serveurs">Offres serveurs</a><a href="#equipes">Équipes</a><a href="#atelier">Atelier</a><a href="#actualites">Actualités</a><a href="#domaines">Domaines</a><a href="#sites">Sites</a>
     <a class="btn btn-blue" href="#contact">Nous contacter</a>
   </div></nav>
 </header>
@@ -496,7 +512,7 @@ footer .brand span{font-size:17px}
           <h1>Énergie, électronique, code. <em>Conçus à Kinshasa.</em></h1>
           <p class="lead">Systèmes embarqués, IA, énergie intelligente, IoT et serveurs. Du prototype au terrain.</p>
           <div class="cta">
-            <a class="btn btn-blue" href="#projets">Voir nos projets</a>
+            <a class="btn btn-blue" href="#projets">Découvrir Adaptron</a>
             <a class="btn btn-ghost" href="#devis">Demander un devis</a>
           </div>
         </div>
@@ -566,12 +582,12 @@ footer .brand span{font-size:17px}
           <p>Notre projet d'habitats spatiaux, pensés pour garder l'équipage en bonne santé et en état de mener sa mission.</p>
         </div>
         <div class="award-photos">
-          <figure class="award-photo"><img src="img/space-apps-hackathon.jpg" alt="Participants concentrés sur leurs ordinateurs pendant le hackathon Space Apps" loading="lazy"><figcaption>Pendant le hackathon</figcaption></figure>
-          <figure class="award-photo"><img src="img/space-apps-equipe.jpg" alt="Participants sur scène lors de la remise des prix du Space Apps Challenge RDC 2025" loading="lazy"><figcaption>Remise des prix, Silikin Village</figcaption></figure>
+          <figure class="award-photo"><img src="img/space-apps-hackathon.jpg" alt="Participants concentrés sur leurs ordinateurs pendant le hackathon Space Apps" loading="lazy" width="960" height="640" decoding="async"><figcaption>Pendant le hackathon</figcaption></figure>
+          <figure class="award-photo"><img src="img/space-apps-equipe.jpg" alt="Participants sur scène lors de la remise des prix du Space Apps Challenge RDC 2025" loading="lazy" width="1080" height="721" decoding="async"><figcaption>Remise des prix, Silikin Village</figcaption></figure>
         </div>
       </div>
       <div class="award award-b">
-        <figure class="award-medal"><img src="img/medaille-merite.jpg" alt="Médaille de bronze du Mérite des Arts, Sciences et Lettres, ruban rouge, bleu et jaune, dans son écrin" loading="lazy"></figure>
+        <figure class="award-medal"><img src="img/medaille-merite.jpg" alt="Médaille de bronze du Mérite des Arts, Sciences et Lettres, ruban rouge, bleu et jaune, dans son écrin" loading="lazy" width="519" height="800" decoding="async"></figure>
         <div class="award-txt">
           <span class="code">distinction · Forum du génie scientifique congolais · 2 sept. 2026</span>
           <h2>Médaille de bronze du <em>Mérite des Arts, Sciences et Lettres</em></h2>
@@ -624,30 +640,11 @@ footer .brand span{font-size:17px}
       <div class="sec-head">
         <div>
           <span class="code">&lt;projets /&gt;</span>
-          <h2>Projets</h2>
+          <h2>Projet phare</h2>
         </div>
-        <p>Conçus et testés par nos équipes.</p>
+        <p>Adaptron, conçu et testé par nos équipes.</p>
       </div>
       <div class="plist">
-        <article class="project">
-          <div class="pname">EFLOW V1<small>micro-hydroélectricité</small></div>
-          <p>Micro-centrale hydroélectrique à turbine Crossflow pour les petites chutes. Deux architectures comparées : <strong>3 ou 6 injecteurs</strong> autour d'un corps hexagonal.</p>
-          <ul class="facts">
-            <li><span>site de référence</span><span>rivière Lukaya</span></li>
-            <li><span>architectures</span><span>3 vs 6 injecteurs</span></li>
-            <li><span>stockage</span><span>réservoir</span></li>
-            <li><span>suite</span><span>microgrid + EMS</span></li>
-          </ul>
-
-        <figure class="gallery" aria-label="EFLOW V1 en images">
-          <div class="shots">
-            <figure><img src="img/eflow-cao.jpg" alt="Modèle CAO d'EFLOW V1 : corps hexagonal transparent, six conduites courbes à brides, cadre noir" loading="lazy"><figcaption>Modèle CAO · six conduites autour du corps hexagonal</figcaption></figure>
-            <figure><img src="img/eflow-proto-3.jpg" alt="Prototype EFLOW V1 : supports jaunes imprimés en 3D, tiges filetées, mécanisme à biellettes sur la roue" loading="lazy"><figcaption>Prototype · supports imprimés en 3D et biellettes</figcaption></figure>
-            <figure><img src="img/eflow-proto-2.jpg" alt="Prototype EFLOW V1 vu de côté : tube central gris, roue entre deux disques bruns" loading="lazy"><figcaption>Prototype · tube central et roue à aubes</figcaption></figure>
-            <figure><img src="img/eflow-proto-1.jpg" alt="Prototype EFLOW V1 en gros plan : aubes blanches entre deux disques, socle vissé" loading="lazy"><figcaption>Prototype · aubes et socle vissé</figcaption></figure>
-          </div>
-        </figure>
-        </article>
         <article class="project">
           <div class="pname">Adaptron<small>contrôle énergétique</small></div>
           <p>Prédiction et contrôle énergétique en trois versions. <strong>Adaptron Twin Drive</strong> pilote des relais et mesure V, I, P sur ESP32.</p>
@@ -661,20 +658,12 @@ footer .brand span{font-size:17px}
           </div>
           <figure class="gallery" aria-label="Adaptron en images">
             <div class="shots shots-ad">
-              <figure><img src="img/adaptron-jpo-demo.jpg" alt="L'équipe Adaptron devant son banc de démonstration : coffret en bois, relais, prises et ampoule de test, aux journées portes ouvertes de l'ULC-ICAM" loading="lazy"><figcaption>JPO ULC-ICAM · démonstration du banc</figcaption></figure>
-              <figure><img src="img/adaptron-jpo-equipe.jpg" alt="L'équipe Adaptron réunie autour du banc de démonstration, affiche du projet au tableau" loading="lazy"><figcaption>JPO ULC-ICAM · l'équipe</figcaption></figure>
-              <figure><img src="img/adaptron-peak2026.jpg" alt="Présentation d'Adaptron, système de prédiction et contrôle énergétique, devant une salle au PEAK 2026" loading="lazy"><figcaption>PEAK 2026 · présentation</figcaption></figure>
-              <figure><img src="img/adaptron-prototype.jpg" alt="Prototype Adaptron : carte ESP32 et câblage sur plaque d'essai" loading="lazy"><figcaption>Prototype · ESP32 sur plaque d'essai</figcaption></figure>
+              <figure><img src="img/adaptron-jpo-demo.jpg" alt="L'équipe Adaptron devant son banc de démonstration : coffret en bois, relais, prises et ampoule de test, aux journées portes ouvertes de l'ULC-ICAM" loading="lazy" width="1080" height="810" decoding="async"><figcaption>JPO ULC-ICAM · démonstration du banc</figcaption></figure>
+              <figure><img src="img/adaptron-jpo-equipe.jpg" alt="L'équipe Adaptron réunie autour du banc de démonstration, affiche du projet au tableau" loading="lazy" width="1080" height="810" decoding="async"><figcaption>JPO ULC-ICAM · l'équipe</figcaption></figure>
+              <figure><img src="img/adaptron-peak2026.jpg" alt="Présentation d'Adaptron, système de prédiction et contrôle énergétique, devant une salle au PEAK 2026" loading="lazy" width="1200" height="678" decoding="async"><figcaption>PEAK 2026 · présentation</figcaption></figure>
+              <figure><img src="img/adaptron-prototype.jpg" alt="Prototype Adaptron : carte ESP32 et câblage sur plaque d'essai" loading="lazy" width="1000" height="1000" decoding="async"><figcaption>Prototype · ESP32 sur plaque d'essai</figcaption></figure>
             </div>
           </figure>
-        </article>
-        <article class="project">
-          <div class="pname">Sixaxis<small>habitat spatial</small></div>
-          <p>Habitats spatiaux conçus pour garder l'équipage en bonne santé et opérationnel. <strong>2<sup>e</sup> place, Best Use of Technology</strong>, NASA Space Apps Challenge RDC 2025.</p>
-          <ul class="facts">
-            <li><span>concours</span><span>Space Apps RDC 2025</span></li>
-            <li><span>prix</span><span>2<sup>e</sup> · Best Use of Technology</span></li>
-          </ul>
         </article>
       </div>
     </div>
@@ -721,15 +710,15 @@ footer .brand span{font-size:17px}
         <p>Cinq équipes, une même marque.</p>
       </div>
       <figure class="teamphoto">
-        <img src="img/equipe-forum.jpg" alt="L'équipe MS Techniker en t-shirts de la startup, autour d'un coffret de démonstration, sur son stand au Forum du génie scientifique congolais" loading="lazy">
+        <img src="img/equipe-forum.jpg" alt="L'équipe MS Techniker en t-shirts de la startup, autour d'un coffret de démonstration, sur son stand au Forum du génie scientifique congolais" loading="lazy" width="1200" height="1200" decoding="async">
         <figcaption><span class="code">sur le terrain</span>L'équipe au Forum du génie scientifique congolais.</figcaption>
       </figure>
       <div class="teams">
-        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/dev.png" alt="Logo MS Techniker Dev Teams"><h3>dev teams</h3><p>Logiciel, firmware, IA.</p></article></div>
-        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/maker.png" alt="Logo MS Maker, Team Maker"><h3>ms maker</h3><p>Mécanique et prototypes.</p></article></div>
-        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/comm.png" alt="Logo MS Comm, Team Comm"><h3>ms comm</h3><p>Communication et partenaires.</p></article></div>
-        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/compta.png" alt="Logo MS Compta, Team Compta"><h3>ms compta</h3><p>Finances et budgets.</p></article></div>
-        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/rookie.png" alt="Logo MS Rookie, Team Rookie"><h3>ms rookie</h3><p>Jeunes talents en formation.</p></article></div>
+        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/dev.png" alt="Logo MS Techniker Dev Teams" width="640" height="491" decoding="async"><h3>dev teams</h3><p>Logiciel, firmware, IA.</p></article></div>
+        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/maker.png" alt="Logo MS Maker, Team Maker" width="640" height="547" decoding="async"><h3>ms maker</h3><p>Mécanique et prototypes.</p></article></div>
+        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/comm.png" alt="Logo MS Comm, Team Comm" width="640" height="527" decoding="async"><h3>ms comm</h3><p>Communication et partenaires.</p></article></div>
+        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/compta.png" alt="Logo MS Compta, Team Compta" width="640" height="553" decoding="async"><h3>ms compta</h3><p>Finances et budgets.</p></article></div>
+        <div class="mt-frame sm hover-frame"><article class="team"><img src="img/rookie.png" alt="Logo MS Rookie, Team Rookie" width="560" height="640" decoding="async"><h3>ms rookie</h3><p>Jeunes talents en formation.</p></article></div>
       </div>
     </div>
   </section>
@@ -800,15 +789,18 @@ footer .brand span{font-size:17px}
       </div>
       <div class="swipe-hint">glissez pour voir les photos</div>
       <div class="works">
-        <figure><img src="img/atelier-tests.jpg" alt="Coffret de commande ouvert : carte ESP32 sur plaque d'essai, modules relais, contacteur, ampoule de test mesurée au multimètre" loading="lazy"><figcaption><b>Coffret de commande</b>ESP32, relais, contacteur. Essai sur charge.</figcaption></figure>
-        <figure><img src="img/electrasynth.jpg" alt="Boîtier en bois gravé du logo et du nom ElectraSynth" loading="lazy"><figcaption><b>ElectraSynth</b>Boîtier en bois gravé.</figcaption></figure>
-        <figure><img src="img/electrasynth-lcd.jpg" alt="Écran LCD bleu sur Arduino Uno affichant ElectraSynth, Chris, Kevin, Levi" loading="lazy"><figcaption><b>ElectraSynth · électronique</b>Arduino et écran LCD. Équipe : Chris, Kevin, Levi.</figcaption></figure>
-        <figure><img src="img/eflow-proto-3.jpg" alt="Prototype EFLOW V1 : supports jaunes imprimés en 3D et biellettes sur la roue" loading="lazy"><figcaption><b>EFLOW V1</b>Montage du prototype.</figcaption></figure>
-        <figure><img src="img/essai-riviere.jpg" alt="Turbine à volute blanche posée dans un ruisseau, génératrice sur le dessus, conduite PVC fixée par une bride bleue" loading="lazy"><figcaption><b>Essai en rivière</b>Turbine à volute et génératrice.</figcaption></figure>
-        <figure><img src="img/turbine-volute.jpg" alt="Volute blanche imprimée en 3D, avec au centre un mécanisme à biellettes et des pièces noires" loading="lazy"><figcaption><b>Turbine à volute</b>Volute imprimée en 3D.</figcaption></figure>
-        <figure><img src="img/presentation-robot.jpg" alt="Membre de l'équipe présentant une simulation de bras robotique projetée à l'écran" loading="lazy" style="object-position:center 30%"><figcaption><b>Présentation</b>Simulation d'un bras robotique.</figcaption></figure>
-        <figure><img src="img/echanges-public.jpg" alt="Membres de l'équipe, badges au cou, en discussion avec une visiteuse lors d'un salon" loading="lazy" style="object-position:center 30%"><figcaption><b>Échanges</b>Rencontre avec le public lors d'un salon.</figcaption></figure>
-        <figure><img src="img/membre-travail.jpg" alt="Membre de l'équipe en t-shirt noir MS Techniker, assis devant un ordinateur portable" loading="lazy" style="object-position:center 25%"><figcaption><b>Au travail</b>Un membre de l'équipe.</figcaption></figure>
+        <figure><img src="img/atelier-tests.jpg" alt="Coffret de commande ouvert : carte ESP32 sur plaque d'essai, modules relais, contacteur, ampoule de test mesurée au multimètre" loading="lazy" width="1200" height="1200" decoding="async"><figcaption><b>Coffret de commande</b>ESP32, relais, contacteur. Essai sur charge.</figcaption></figure>
+        <figure><img src="img/electrasynth.jpg" alt="Boîtier en bois gravé du logo et du nom ElectraSynth" loading="lazy" width="1200" height="1200" decoding="async"><figcaption><b>ElectraSynth</b>Boîtier en bois gravé.</figcaption></figure>
+        <figure><img src="img/electrasynth-lcd.jpg" alt="Écran LCD bleu sur Arduino Uno affichant ElectraSynth, Chris, Kevin, Levi" loading="lazy" width="1200" height="676" decoding="async"><figcaption><b>ElectraSynth · électronique</b>Arduino et écran LCD. Équipe : Chris, Kevin, Levi.</figcaption></figure>
+        <figure><img src="img/eflow-proto-3.jpg" alt="Prototype EFLOW V1 : supports jaunes imprimés en 3D et biellettes sur la roue" loading="lazy" width="1100" height="825" decoding="async"><figcaption><b>EFLOW V1</b>Montage du prototype.</figcaption></figure>
+        <figure><img src="img/essai-riviere.jpg" alt="Turbine à volute blanche posée dans un ruisseau, génératrice sur le dessus, conduite PVC fixée par une bride bleue" loading="lazy" width="1200" height="900" decoding="async"><figcaption><b>Essai en rivière</b>Turbine à volute et génératrice.</figcaption></figure>
+        <figure><img src="img/turbine-volute.jpg" alt="Volute blanche imprimée en 3D, avec au centre un mécanisme à biellettes et des pièces noires" loading="lazy" width="1200" height="900" decoding="async"><figcaption><b>Turbine à volute</b>Volute imprimée en 3D.</figcaption></figure>
+        <figure><img src="img/presentation-robot.jpg" alt="Membre de l'équipe présentant une simulation de bras robotique projetée à l'écran" loading="lazy" style="object-position:center 30%" width="720" height="721" decoding="async"><figcaption><b>Présentation</b>Simulation d'un bras robotique.</figcaption></figure>
+        <figure><img src="img/echanges-public.jpg" alt="Membres de l'équipe, badges au cou, en discussion avec une visiteuse lors d'un salon" loading="lazy" style="object-position:center 30%" width="1072" height="718" decoding="async"><figcaption><b>Échanges</b>Rencontre avec le public lors d'un salon.</figcaption></figure>
+        <figure><img src="img/membre-travail.jpg" alt="Membre de l'équipe en t-shirt noir MS Techniker, assis devant un ordinateur portable" loading="lazy" style="object-position:center 25%" width="900" height="1200" decoding="async"><figcaption><b>Au travail</b>Un membre de l'équipe.</figcaption></figure>
+        <figure><img src="img/eflow-cao.jpg" alt="Modèle CAO d'EFLOW V1 : corps hexagonal transparent, six conduites courbes à brides, cadre noir" loading="lazy" width="1100" height="756" decoding="async"><figcaption><b>EFLOW V1</b>Modèle CAO · six conduites autour du corps hexagonal</figcaption></figure>
+        <figure><img src="img/eflow-proto-2.jpg" alt="Prototype EFLOW V1 vu de côté : tube central gris, roue entre deux disques bruns" loading="lazy" width="1100" height="825" decoding="async"><figcaption><b>EFLOW V1</b>Prototype · tube central et roue à aubes</figcaption></figure>
+        <figure><img src="img/eflow-proto-1.jpg" alt="Prototype EFLOW V1 en gros plan : aubes blanches entre deux disques, socle vissé" loading="lazy" width="1100" height="825" decoding="async"><figcaption><b>EFLOW V1</b>Prototype · aubes et socle vissé</figcaption></figure>
       </div>
     </div>
   </section>
@@ -979,9 +971,18 @@ footer .brand span{font-size:17px}
     </div>
   </div>
 </div>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Visionneuse photo">
+  <div class="lb-top"><span id="lb-count"></span><button class="lb-x" type="button" id="lb-close" aria-label="Fermer la visionneuse">×</button></div>
+  <div class="lb-stage" id="lb-stage">
+    <button class="lb-nav lb-prev" type="button" id="lb-prev" aria-label="Photo précédente">‹</button>
+    <img id="lb-img" alt="">
+    <button class="lb-nav lb-next" type="button" id="lb-next" aria-label="Photo suivante">›</button>
+  </div>
+  <p class="lb-cap" id="lb-cap"></p>
+</div>
 <footer>
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="Retour en haut"><span class="markwrap"><img src="img/mark.png" alt=""></span><img class="wordmark" src="img/wordmark.png" alt="ms techniker"></a>
+    <a class="brand" href="#top" aria-label="Retour en haut"><span class="markwrap"><img src="img/mark.png" alt="" width="256" height="237" decoding="async"></span><img class="wordmark" src="img/wordmark.png" alt="ms techniker" width="640" height="79" decoding="async"></a>
     <span class="mono">embarqué · IA · énergie · IoT · serveurs</span>
     <span class="fcontact"><a href="mailto:mstechniker96@gmail.com">mstechniker96@gmail.com</a> · <a href="https://wa.me/243985651544">+243 985 651 544</a></span>
     <span>© 2026 MS Techniker</span>
@@ -1242,6 +1243,37 @@ document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click
         st('bad','Le serveur ne répond pas. <a href="https://wa.me/243985651544?text='+encodeURIComponent(t)+'">Envoyez votre demande par WhatsApp</a>.');})
       .then(function(){b.disabled=false;});});
   document.getElementById('devisAgain').addEventListener('click',function(){corps(true);f.service.focus();});
+})();
+</script>
+<script>
+/* Visionneuse : clic sur une photo → plein écran, flèches, glisser, Échap */
+(function(){
+  var groupes=[['#projets .shots img','Projets'],['.award-photos img, .award-medal img','Distinctions'],['.teamphoto img','Équipe'],['.works img','Atelier']];
+  var lb=document.getElementById('lb'),im=document.getElementById('lb-img'),cap=document.getElementById('lb-cap'),cnt=document.getElementById('lb-count');
+  var liste=[],i=0,retour=null;
+  function legende(img){var f=img.closest('figure'),c=f&&f.querySelector('figcaption');return c?c.innerHTML:img.alt;}
+  function montrer(){var x=liste[i];im.src=x.src;im.alt=x.alt;cap.innerHTML=legende(x);cnt.textContent=(i+1)+' / '+liste.length;
+    document.getElementById('lb-prev').hidden=document.getElementById('lb-next').hidden=liste.length<2;
+    [liste[i+1],liste[i-1]].forEach(function(n){if(n){var p=new Image();p.src=n.src;}});}
+  function ouvrir(l,k){liste=l;i=k;retour=document.activeElement;lb.hidden=false;document.body.classList.add('modal-open');montrer();document.getElementById('lb-close').focus();}
+  function fermer(){lb.hidden=true;im.removeAttribute('src');document.body.classList.remove('modal-open');if(retour)retour.focus();}
+  function aller(d){i=(i+d+liste.length)%liste.length;montrer();}
+  groupes.forEach(function(g){var l=[].slice.call(document.querySelectorAll(g[0]));
+    l.forEach(function(img,k){img.classList.add('zoomable');img.tabIndex=0;img.setAttribute('role','button');
+      img.setAttribute('aria-label','Agrandir : '+(img.alt||'photo'));
+      img.addEventListener('click',function(){ouvrir(l,k);});
+      img.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();ouvrir(l,k);}});});});
+  document.getElementById('lb-close').addEventListener('click',fermer);
+  document.getElementById('lb-prev').addEventListener('click',function(){aller(-1);});
+  document.getElementById('lb-next').addEventListener('click',function(){aller(1);});
+  lb.addEventListener('click',function(e){if(e.target===lb||e.target.id==='lb-stage')fermer();});
+  document.addEventListener('keydown',function(e){if(lb.hidden)return;
+    if(e.key==='Escape')fermer();else if(e.key==='ArrowRight')aller(1);else if(e.key==='ArrowLeft')aller(-1);
+    else if(e.key==='Tab'){var f=[].slice.call(lb.querySelectorAll('button')).filter(function(b){return !b.hidden&&b.offsetParent;});var a=f[0],z=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus();}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus();}}});
+  var x0=null;var st=document.getElementById('lb-stage');
+  st.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+  st.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)aller(dx<0?1:-1);x0=null;});
 })();
 </script>
 </body>
