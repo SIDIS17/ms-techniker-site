@@ -37,7 +37,7 @@ function lireJson(req, limite = 20 * 1024) {
   });
 }
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ico': 'image/x-icon' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json' };
 const INTERDIT = /(^|\/)\.|^\/(backend|api|supabase)(\/|$)|\.(db|md|yml|json|sql)$|^\/Dockerfile$/i;
 
 function creerApp(cfg = config(), deps = {}) {

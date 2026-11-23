@@ -2,7 +2,7 @@
 FROM node:22-alpine
 ENV NODE_ENV=production PORT=8080 DB_PATH=/data/mstechniker.db SITE_ROOT=/app
 WORKDIR /app
-COPY index.html README.md ./
+COPY index.html README.md favicon.ico favicon-16.png favicon-32.png apple-touch-icon.png icon-192.png icon-512.png site.webmanifest ./
 COPY img ./img
 COPY backend ./backend
 COPY api ./api
